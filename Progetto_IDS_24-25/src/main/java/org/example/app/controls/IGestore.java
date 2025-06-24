@@ -4,5 +4,7 @@ import org.example.app.model.Componente;
 import org.example.app.model.Messaggio;
 
 public interface IGestore {
-    public void send(Componente sender, Messaggio event);
+    public void sendInformation(Componente sender, Messaggio event);
+    public void sendProduct(Componente sender, Messaggio event);
+    public void sendPackage(Componente sender, Messaggio event);
 }

@@ -1,5 +1,6 @@
 package org.example.app.model;
 
+import org.example.app.controls.GestoreCreazioni;
 import org.example.app.controls.GestorePubblicazioni;
 import org.example.app.controls.IGestore;
 
@@ -8,12 +9,15 @@ public abstract class Componente {
     private String nome, cognome;
     private int matricola;
     private String email;
+    protected IGestore gestore;
 
-    public Componente( String nome, String cognome, int matricola, String email) {
+
+    public Componente( String nome, String cognome, int matricola, String email, IGestore gestore) {
         this.nome = nome;
         this.cognome = cognome;
         this.matricola = matricola;
         this.email = email;
+        this.gestore = gestore;
     }
 
     public String getEmail() {
@@ -47,5 +51,10 @@ public abstract class Componente {
     public void setMatricola(int matricola) {
         this.matricola = matricola;
     }
+
+    public IGestore getGestore(){return gestore;}
+
+    public void setGestore(IGestore gestore){this.gestore = gestore;}
+
     public abstract void riceviMessaggio(String messaggio);
 }

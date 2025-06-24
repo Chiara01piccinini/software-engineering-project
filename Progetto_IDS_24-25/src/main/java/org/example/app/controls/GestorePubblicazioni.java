@@ -43,7 +43,7 @@ public class GestorePubblicazioni implements IGestore {
     }
 // metodo per inviare le notifiche ai vari componenti usandola classe EmailSystem
     @Override
-    public void send(Componente mittente, Messaggio messaggio) {
+    public void sendInformation(Componente mittente, Messaggio messaggio) {
         if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
             EmailSystem.inviaMail(curatore.getEmail(), "Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
 
@@ -54,5 +54,15 @@ public class GestorePubblicazioni implements IGestore {
                 EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "approvazione negata per informazini sul prodotto :" + prodotto.getNome());
             }
         }
+    }
+
+    @Override
+    public void sendProduct(Componente sender, Messaggio event) {
+
+    }
+
+    @Override
+    public void sendPackage(Componente sender, Messaggio event) {
+
     }
 }

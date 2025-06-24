@@ -7,6 +7,7 @@ import org.example.app.view.EmailSystem;
 
 public class Main {
     public static void main(String[] args) {
+        /*
         //  Setup oggetti di sistema
         EmailSystem emailSystem = new EmailSystem();
         Curatore curatore = new Curatore("pinco","pallo",1234,"pincopallino@gmail.com");
@@ -21,5 +22,6 @@ public class Main {
         System.out.println("ID: " + prodotto.getId());
         System.out.println("Nome: " + prodotto.getNome());
         System.out.println("Descrizione: " + prodotto.getDescrizione().getContenuto());
+        */
     }
 }
