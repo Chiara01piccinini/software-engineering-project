@@ -1,6 +1,5 @@
 package org.example.app.model;
 
-import org.example.app.controls.GestorePubblicazioni;
 import org.example.app.controls.IGestore;
 
 public class Trasformatore extends Venditore {
@@ -12,6 +11,6 @@ public class Trasformatore extends Venditore {
     }
 
     public void inviaProdotto(IGestore gestore, FileInformazioniProdotto info){
-        gestore.sendProduct(this, info);
+        gestore.inviaProdotto(this, info);
     }
 }

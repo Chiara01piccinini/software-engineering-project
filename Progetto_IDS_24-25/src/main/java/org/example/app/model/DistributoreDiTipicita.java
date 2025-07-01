@@ -8,4 +8,8 @@ public class DistributoreDiTipicita extends Venditore{
     public DistributoreDiTipicita( String nome, String cognome, int matricola, String email, IGestore gestore) {
         super( nome, cognome, matricola, email, gestore);
     }
+
+    public void inviaPacchetto(IGestore gestore, FileInformazioniPacchetto pacchetto){
+        gestore.inviaPacchetto(this,pacchetto);
+    }
 }
