@@ -15,4 +15,10 @@ public class FileInformazioniImmagini implements IFileInformazioni  {
     public String getContenuto() {
         return pathImmagine;
     }
+    // legge il file immagine e restituisce il contenuto in Base64
+    public String getContenutoBase64() throws IOException {
+        File file = new File(pathImmagine);
+        byte[] fileContent = Files.readAllBytes(file.toPath());
+        return Base64.getEncoder().encodeToString(fileContent);
+    }
 }

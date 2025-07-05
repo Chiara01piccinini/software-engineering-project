@@ -4,12 +4,12 @@ import javax.xml.stream.Location;
 
 public class Azienda {
     private String name;
-    private Location position;
+    //private Location position;
     private String PI;
 
-    public Azienda (String name, Location position, String PI){
+    public Azienda (String name, String PI){
         this.name = name;
-        this.position = position;
+       // this.position = position;
         this.PI = PI;
     }
 }
