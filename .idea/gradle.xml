@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/Progetto_IDS_24-25" />
+            <option value="$PROJECT_DIR$/Progetto_IDS_24-25/Progetto_IDS_24-25" />
           </set>
         </option>
       </GradleProjectSettings>

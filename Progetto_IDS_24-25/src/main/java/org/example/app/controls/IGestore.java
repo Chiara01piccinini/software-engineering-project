@@ -7,4 +7,5 @@ public interface IGestore {
     public void inviaInformazioni(Componente sender, Messaggio event);
     public void inviaProdotto(Componente sender, Messaggio event);
     public void inviaPacchetto(Componente sender, Messaggio event);
+
 }

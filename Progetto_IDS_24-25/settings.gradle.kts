@@ -1,2 +1,4 @@
-rootProject.name = "Progetto_IDS_24-25"
+rootProject.name = "software-engineering-project"
+include( "Progetto_IDS_24-25")
+
 

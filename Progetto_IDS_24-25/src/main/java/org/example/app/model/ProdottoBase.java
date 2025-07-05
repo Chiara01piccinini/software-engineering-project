@@ -7,8 +7,9 @@ import javax.xml.stream.Location;
 public class ProdottoBase extends Prodotto{
     private Produttore produttore;
 
-    public ProdottoBase(int id, String nome) {
-        super(id, nome);
+    public ProdottoBase(int id, String nome, org.example.app.model.Azienda azienda, Produttore produttore) {
+        super(id, nome, azienda);
+        this.produttore = produttore;
     }
 
     public static class Azienda {

@@ -1,11 +1,9 @@
 package org.example.app.controls;
 
-import jakarta.mail.BodyPart;
-import jakarta.mail.Flags;
-import jakarta.mail.Message;
-import jakarta.mail.Multipart;
 import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
+
+
 //fa da mediator all'interno del pattern
 public class GestorePubblicazioni implements IGestore {
     private Curatore curatore;
@@ -26,13 +24,6 @@ public class GestorePubblicazioni implements IGestore {
         this.curatore = curatore;
     }
 
-   /*ublic Marketplace getMarketplace() {
-        return marketplace;
-    }
-
-    public void setMarketplace(Marketplace marketplace) {
-        this.marketplace = marketplace;
-    }*/
 
     public EmailSystem getNotifiche() {
         return notifiche;
@@ -41,26 +32,48 @@ public class GestorePubblicazioni implements IGestore {
     public void setNotifiche(EmailSystem notifiche) {
         this.notifiche = notifiche;
     }
-// metodo per inviare le notifiche ai vari componenti usandola classe EmailSystem
-    @Override
-    public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
-        if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
-            EmailSystem.inviaMail(curatore.getEmail(), "Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
 
-            if (curatore.approva(info, (Venditore) mittente, prodotto)) {
-                prodotto.aggiungiInformazioni(info);
-                mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + prodotto.getNome());
-            } else {
-                EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "approvazione negata per informazini sul prodotto :" + prodotto.getNome());
+@Override
+public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
+    if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
+//chiama EmailSystem per inviare il messaggio
+        String token = EmailSystem.inviaMail(curatore.getEmail(),
+                "Esito richiesta per  " + prodotto.getNome(),
+                "Contenuto da approvare: " + info.getContenuto());
+
+        System.out.println("[Curatore] In attesa di risposta email per approvazione...");
+//attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
+        Boolean approvato = null;
+        int maxTentativi = 20;
+        int tentativo = 0;
+
+        while (tentativo < maxTentativi && approvato == null) {
+            try {
+                Thread.sleep(30000); // 30 secondi
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+
+            approvato = EmailSystem.leggiRispostaApprova(token);
+            tentativo++;
+        }
+//gestione della risposta
+        if (Boolean.TRUE.equals(approvato)) {
+            prodotto.aggiungiInformazioni(info);
+            mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + prodotto.getNome());
+        } else if (Boolean.FALSE.equals(approvato)) {
+            EmailSystem.inviaMail(mittente.getEmail(),
+                    "Approvazione negata " + prodotto.getNome(),
+                    "Approvazione negata per informazioni sul prodotto: " + prodotto.getNome());
+        } else {
+            System.out.println(" Nessuna risposta ricevuta entro il tempo limite.");
         }
     }
-
+}
     @Override
     public void inviaProdotto(Componente sender, Messaggio event) {
 
     }
-
     @Override
     public void inviaPacchetto(Componente sender, Messaggio event) {
 
