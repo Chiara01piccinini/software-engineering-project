@@ -28,9 +28,11 @@ public class Marketplace {
     public static void setProdotti(Map<Integer, Prodotto> prodotti) {
         Marketplace.prodotti = prodotti;
     }
+
     public static Prodotto getProdottoById(int id){
         return prodotti.get(id);
     }
+
     public static void aggiungiProdotto(Prodotto p){
         prodotti.put(p.getId(),p);
     }
