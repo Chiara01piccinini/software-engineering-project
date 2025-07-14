@@ -99,6 +99,11 @@ public class GestorePubblicazioni implements IGestore {
     }
     @Override
     public void inviaPacchetto(Componente sender, Messaggio event) {
+        this.attendiRisposta(GestoreCreazioni.getTokenPacchetto());
+        if(event instanceof FileInformazioniPacchetto info){
+            Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getId(), info.getPrezzo(),info.getProdotti());
+            Marketplace.aggiungiPacchetto(pacchetto);
+        }
 
     }
 }

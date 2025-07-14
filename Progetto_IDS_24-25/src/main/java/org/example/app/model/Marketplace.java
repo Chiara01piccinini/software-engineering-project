@@ -8,6 +8,7 @@ import java.util.Map;
 public class Marketplace {
     private IGestore gestore;
     private static Map<Integer,Prodotto> prodotti;
+    private static Map<Integer,Pacchetto> pacchetti;
 
     public Marketplace(IGestore gestore) {
         this.gestore = gestore;
@@ -35,5 +36,9 @@ public class Marketplace {
 
     public static void aggiungiProdotto(Prodotto p){
         prodotti.put(p.getId(),p);
+    }
+
+    public static void aggiungiPacchetto(Pacchetto pacchetto){
+        pacchetti.put(pacchetto.getId(),pacchetto);
     }
 }
