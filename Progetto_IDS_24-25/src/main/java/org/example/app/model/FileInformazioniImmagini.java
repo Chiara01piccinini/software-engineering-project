@@ -7,9 +7,11 @@ import java.util.Base64;
 //rappresenta il comportamento del file immagine ,in linea con il pattern strategy
 public class FileInformazioniImmagini implements IFileInformazioni  {
     private String pathImmagine;
+    private Prodotto prodotto;
 
-    public FileInformazioniImmagini(String pathImmagine, int idRichiesta) {
+    public FileInformazioniImmagini(String pathImmagine, Prodotto prodotto) {
         this.pathImmagine = pathImmagine;
+        this.prodotto = prodotto;
     }
 
     public String getContenuto() {
@@ -20,5 +22,13 @@ public class FileInformazioniImmagini implements IFileInformazioni  {
         File file = new File(pathImmagine);
         byte[] fileContent = Files.readAllBytes(file.toPath());
         return Base64.getEncoder().encodeToString(fileContent);
+    }
+
+    public String getNome() {
+        return prodotto.getNome();
+    }
+
+    public Prodotto getProdotto() {
+        return prodotto;
     }
 }

@@ -8,12 +8,12 @@ import org.example.app.view.EmailSystem;
 public class GestorePubblicazioni implements IGestore {
     private Curatore curatore;
     private EmailSystem notifiche;
-    private Prodotto prodotto;
+    private Messaggio messaggio;
 
-    public GestorePubblicazioni(Curatore curatore, EmailSystem notifiche, Prodotto prodotto) {
+    public GestorePubblicazioni(Curatore curatore, EmailSystem notifiche, Messaggio messaggio) {
         this.curatore = curatore;
         this.notifiche = notifiche;
-        this.prodotto = prodotto;
+        this.messaggio = messaggio;
     }
 
     public Curatore getCuratore() {
@@ -52,40 +52,13 @@ public class GestorePubblicazioni implements IGestore {
     }
 
     @Override
-    public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
-        if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
-            //chiama EmailSystem per inviare il messaggio
-            String token = EmailSystem.inviaMail(curatore.getEmail(),
-                    "Esito richiesta per  " + prodotto.getNome(),
-                    "Contenuto da approvare: " + info.getContenuto());
+    public void inviaInformazioni(Componente sender, Messaggio event) {
+        this.attendiRisposta(GestoreCreazioni.getTokenInformazioni());
 
-            System.out.println("[Curatore] In attesa di risposta email per approvazione...");
-            //attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
-            Boolean approvato = null;
-            int maxTentativi = 20;
-            int tentativo = 0;
-
-            while (tentativo < maxTentativi && approvato == null) {
-                try {
-                    Thread.sleep(30000); // 30 secondi
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                approvato = EmailSystem.leggiRispostaApprova(token);
-                tentativo++;
-            }
-            //gestione della risposta
-            if (Boolean.TRUE.equals(approvato)) {
-                prodotto.aggiungiInformazioni(info);
-                mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + prodotto.getNome());
-            } else if (Boolean.FALSE.equals(approvato)) {
-                EmailSystem.inviaMail(mittente.getEmail(),
-                        "Approvazione negata " + prodotto.getNome(),
-                        "Approvazione negata per informazioni sul prodotto: " + prodotto.getNome());
-            } else {
-                System.out.println(" Nessuna risposta ricevuta entro il tempo limite.");
-            }
+        if (event instanceof FileInformazioniTestuale info) {
+            info.getProdotto().aggiungiInformazioni(info);
+        } else if (event instanceof FileInformazioniImmagini info){
+            info.getProdotto().aggiungiInformazioni(info);
         }
     }
 
@@ -93,7 +66,7 @@ public class GestorePubblicazioni implements IGestore {
     public void inviaProdotto(Componente sender, Messaggio event) {
         this.attendiRisposta(GestoreCreazioni.getTokenProdotto());
         if (event instanceof FileInformazioniProdotto info) {
-            Prodotto prodotto = new Prodotto(info.getId(), info.getNome(), info.getAzienda());
+            Prodotto prodotto = new Prodotto(info.getNome(), info.getAzienda());
             Marketplace.aggiungiProdotto(prodotto);
         }
     }
@@ -101,7 +74,7 @@ public class GestorePubblicazioni implements IGestore {
     public void inviaPacchetto(Componente sender, Messaggio event) {
         this.attendiRisposta(GestoreCreazioni.getTokenPacchetto());
         if(event instanceof FileInformazioniPacchetto info){
-            Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getId(), info.getPrezzo(),info.getProdotti());
+            Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPrezzo(),info.getProdotti());
             Marketplace.aggiungiPacchetto(pacchetto);
         }
 

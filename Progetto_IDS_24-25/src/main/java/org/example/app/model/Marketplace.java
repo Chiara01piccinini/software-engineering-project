@@ -4,11 +4,12 @@ import org.example.app.controls.IGestore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Marketplace {
     private IGestore gestore;
-    private static Map<Integer,Prodotto> prodotti;
-    private static Map<Integer,Pacchetto> pacchetti;
+    private static Map<UUID,Prodotto> prodotti;
+    private static Map<UUID,Pacchetto> pacchetti;
 
     public Marketplace(IGestore gestore) {
         this.gestore = gestore;
@@ -22,11 +23,11 @@ public class Marketplace {
         this.gestore = gestore;
     }
 
-    public static Map<Integer, Prodotto> getProdotti() {
+    public static Map<UUID, Prodotto> getProdotti() {
         return prodotti;
     }
 
-    public static void setProdotti(Map<Integer, Prodotto> prodotti) {
+    public static void setProdotti(Map<UUID, Prodotto> prodotti) {
         Marketplace.prodotti = prodotti;
     }
 

@@ -1,26 +1,25 @@
 package org.example.app.model;
 
+import java.util.Optional;
+import java.util.UUID;
+
 //rappresenta tutti i prodotti che possono essre caricati
 public class Prodotto implements Messaggio {
-    private int id;
+    private final UUID id;
     private String nome;
     private Azienda azienda;
     private Boolean vendita=false;
     private FileInformazioniTestuale descrizione;
     private FileInformazioniImmagini foto;
 
-    public Prodotto(int id, String nome, Azienda azienda) {
-        this.id = id;
+    public Prodotto(String nome, Azienda azienda) {
+        this.id = UUID.randomUUID();
         this.nome = nome;
         this.azienda = azienda;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getNome() {
