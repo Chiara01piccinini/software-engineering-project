@@ -10,7 +10,7 @@ public abstract class Venditore  extends Componente{
 
     //invoca il gestore per inviare i file
     public void inviaFile(GestorePubblicazioni gestore,IFileInformazioni info ){
-     gestore.inviaInformazioni(this,info);
+        gestore.inviaInformazioni(this,info);
     };
     //stampa a video ilmessaggio ricevuto
     public void riceviMessaggio(String messaggio) {

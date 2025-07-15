@@ -33,16 +33,8 @@ public class GestorePubblicazioni implements IGestore {
         this.notifiche = notifiche;
     }
 
-@Override
-public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
-    if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
-//chiama EmailSystem per inviare il messaggio
-        String token = EmailSystem.inviaMail(curatore.getEmail(),
-                "Esito richiesta per  " + prodotto.getNome(),
-                "Contenuto da approvare: " + info.getContenuto());
-
-        System.out.println("[Curatore] In attesa di risposta email per approvazione...");
-//attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
+    public void attendiRisposta(String token){
+        //attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
         Boolean approvato = null;
         int maxTentativi = 20;
         int tentativo = 0;
@@ -57,25 +49,61 @@ public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
             approvato = EmailSystem.leggiRispostaApprova(token);
             tentativo++;
         }
-//gestione della risposta
-        if (Boolean.TRUE.equals(approvato)) {
-            prodotto.aggiungiInformazioni(info);
-            mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + prodotto.getNome());
-        } else if (Boolean.FALSE.equals(approvato)) {
-            EmailSystem.inviaMail(mittente.getEmail(),
-                    "Approvazione negata " + prodotto.getNome(),
-                    "Approvazione negata per informazioni sul prodotto: " + prodotto.getNome());
-        } else {
-            System.out.println(" Nessuna risposta ricevuta entro il tempo limite.");
+    }
+
+    @Override
+    public void inviaInformazioni(Componente mittente, Messaggio messaggio) {
+        if (messaggio instanceof IFileInformazioni info && mittente instanceof Venditore) {
+            //chiama EmailSystem per inviare il messaggio
+            String token = EmailSystem.inviaMail(curatore.getEmail(),
+                    "Esito richiesta per  " + prodotto.getNome(),
+                    "Contenuto da approvare: " + info.getContenuto());
+
+            System.out.println("[Curatore] In attesa di risposta email per approvazione...");
+            //attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
+            Boolean approvato = null;
+            int maxTentativi = 20;
+            int tentativo = 0;
+
+            while (tentativo < maxTentativi && approvato == null) {
+                try {
+                    Thread.sleep(30000); // 30 secondi
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                approvato = EmailSystem.leggiRispostaApprova(token);
+                tentativo++;
+            }
+            //gestione della risposta
+            if (Boolean.TRUE.equals(approvato)) {
+                prodotto.aggiungiInformazioni(info);
+                mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + prodotto.getNome());
+            } else if (Boolean.FALSE.equals(approvato)) {
+                EmailSystem.inviaMail(mittente.getEmail(),
+                        "Approvazione negata " + prodotto.getNome(),
+                        "Approvazione negata per informazioni sul prodotto: " + prodotto.getNome());
+            } else {
+                System.out.println(" Nessuna risposta ricevuta entro il tempo limite.");
+            }
         }
     }
-}
+
     @Override
     public void inviaProdotto(Componente sender, Messaggio event) {
-
+        this.attendiRisposta(GestoreCreazioni.getTokenProdotto());
+        if (event instanceof FileInformazioniProdotto info) {
+            Prodotto prodotto = new Prodotto(info.getId(), info.getNome(), info.getAzienda());
+            Marketplace.aggiungiProdotto(prodotto);
+        }
     }
     @Override
     public void inviaPacchetto(Componente sender, Messaggio event) {
+        this.attendiRisposta(GestoreCreazioni.getTokenPacchetto());
+        if(event instanceof FileInformazioniPacchetto info){
+            Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getId(), info.getPrezzo(),info.getProdotti());
+            Marketplace.aggiungiPacchetto(pacchetto);
+        }
 
     }
 }
