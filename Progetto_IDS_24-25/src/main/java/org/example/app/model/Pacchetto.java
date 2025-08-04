@@ -2,16 +2,17 @@ package org.example.app.model;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
-public class Pacchetto {
+public class Pacchetto implements Messaggio{
     private String nome;
-    private int id;
+    private final UUID id;
     private BigDecimal prezzo;
     private List<Prodotto> prodotti;
 
-    public Pacchetto(String nome, int id, BigDecimal prezzo, List<Prodotto> prodotti) {
+    public Pacchetto(String nome, BigDecimal prezzo, List<Prodotto> prodotti) {
         this.nome = nome;
-        this.id = id;
+        this.id = UUID.randomUUID();
         this.prezzo = prezzo;
         this.prodotti = prodotti;
     }
@@ -24,12 +25,8 @@ public class Pacchetto {
         this.nome = nome;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public BigDecimal getPrezzo() {

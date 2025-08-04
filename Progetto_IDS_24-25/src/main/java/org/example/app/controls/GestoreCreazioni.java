@@ -10,6 +10,7 @@ public class GestoreCreazioni implements IGestore {
     private GestorePubblicazioni gestorePubblicazioni;
     private static String tokenProdotto;
     private static String tokenPacchetto;
+    private static String tokenInformazioni;
 
     public static String getTokenProdotto(){
         return tokenProdotto;
@@ -19,11 +20,36 @@ public class GestoreCreazioni implements IGestore {
         return tokenPacchetto;
     }
 
-    public GestoreCreazioni(){}
+    public static String getTokenInformazioni(){return tokenInformazioni;}
+
+    public GestoreCreazioni(GestorePubblicazioni gestorePubblicazioni, Curatore curatore){
+        this.gestorePubblicazioni = gestorePubblicazioni;
+        this.curatore = curatore;
+    }
 
     @Override
     public void inviaInformazioni(Componente sender, Messaggio event) {
+        if (event instanceof FileInformazioniTestuale info && sender instanceof Venditore) {
+            //chiama EmailSystem per inviare il messaggio
+            tokenInformazioni = EmailSystem.inviaMail(curatore.getEmail(),"Esito richiesta per  " + info.getNome(),"Contenuto da approvare: " + info.getContenuto());
 
+            if (curatore.approvaInformazioni(info, (Venditore) sender, info.getProdotto())){
+                gestorePubblicazioni.inviaInformazioni(sender,event);
+                sender.riceviMessaggio("Informazioni approvate per il prodotto: " + info.getNome());
+                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "Le informazioni sono state aggiunte al prodotto :" + info.getNome());
+            }else
+                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");
+        }
+        if (event instanceof FileInformazioniImmagini info && sender instanceof Venditore) {
+            //chiama EmailSystem per inviare il messaggio
+            tokenInformazioni = EmailSystem.inviaMail(curatore.getEmail(),"Esito richiesta per  " + info.getNome(),"Contenuto da approvare: " + info.getContenuto());
+            if (curatore.approvaInformazioni(info, (Venditore) sender, info.getProdotto())){
+                gestorePubblicazioni.inviaInformazioni(sender,event);
+                sender.riceviMessaggio("Immagini approvate per il prodotto: " + info.getNome());
+                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "Le immagini sono state aggiunte al prodotto :" + info.getNome());
+            }else
+                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");
+        }
     }
 
     @Override

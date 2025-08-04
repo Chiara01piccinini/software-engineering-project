@@ -31,8 +31,8 @@ public class Curatore extends Componente{
     public boolean approvaInformazioni(IFileInformazioni info, Venditore venditore, Prodotto prodotto) {
         String subject = "esito approvazione per  " + prodotto.getNome();
         System.out.println("[Curatore] In attesa di risposta email per approvazione...");
-
-        // poling che attende  max 5 minuti con polling ogni 30s
+        return this.approva(subject);
+        /*// poling che attende  max 5 minuti con polling ogni 30s
         for (int i = 0; i < 10; i++) {
             try {
                 Thread.sleep(30000);//3 secondi
@@ -48,7 +48,7 @@ public class Curatore extends Componente{
             }
         }
         System.out.println("[Curatore] Approvazione non ricevuta entro il tempo limite.");
-        return false;
+        return false;*/
     }
 
     //stampa a video ilmessaggio ricevuto
@@ -64,5 +64,9 @@ public class Curatore extends Componente{
         return this.approva(subject);
     }
 
-    public boolean approvaPacchetto(FileInformazioniPacchetto pacchetto, DistributoreDiTipicita distributore) {return true;}
+    public boolean approvaPacchetto(FileInformazioniPacchetto pacchetto, DistributoreDiTipicita distributore) {
+        String subject = "esito approvazione per " + pacchetto.getNome();
+        System.out.println("[Curatore] In attesa di risposta email per approvazione...");
+        return this.approva(subject);
+    }
 }
