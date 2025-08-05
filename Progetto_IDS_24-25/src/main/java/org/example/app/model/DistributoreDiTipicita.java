@@ -5,8 +5,8 @@ import org.example.app.controls.IGestore;
 
 public class DistributoreDiTipicita extends Venditore{
 
-    public DistributoreDiTipicita( String nome, String cognome, int matricola, String email, IGestore gestore) {
-        super( nome, cognome, matricola, email, gestore);
+    public DistributoreDiTipicita( String nome, String cognome, int matricola, String email) {
+        super( nome, cognome, matricola, email);
     }
 
     public void inviaPacchetto(IGestore gestore, FileInformazioniPacchetto pacchetto){

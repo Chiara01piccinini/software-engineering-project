@@ -1,6 +1,6 @@
 package org.example.app.model;
 //rappresenta il comportamento del file testuale, in linea con il pattern startegy
-public class FileInformazioniTestuale implements IFileInformazioni {
+public class FileInformazioniTestuale implements Messaggio {
     private String contenuto;
     private Prodotto prodotto;
 

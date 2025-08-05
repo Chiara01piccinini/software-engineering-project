@@ -4,78 +4,68 @@ import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
 
 public class GestoreCreazioni implements IGestore {
-    private DistributoreDiTipicita distributore;
     private Curatore curatore;
-    private Trasformatore trasformatore;
     private GestorePubblicazioni gestorePubblicazioni;
-    private static String tokenProdotto;
-    private static String tokenPacchetto;
-    private static String tokenInformazioni;
 
-    public static String getTokenProdotto(){
-        return tokenProdotto;
-    }
-
-    public static String getTokenPacchetto(){
-        return tokenPacchetto;
-    }
-
-    public static String getTokenInformazioni(){return tokenInformazioni;}
-
-    public GestoreCreazioni(GestorePubblicazioni gestorePubblicazioni, Curatore curatore){
+    public GestoreCreazioni(GestorePubblicazioni gestorePubblicazioni, Curatore curatore) {
         this.gestorePubblicazioni = gestorePubblicazioni;
         this.curatore = curatore;
     }
 
+    public Curatore getCuratore() {
+        return curatore;
+    }
+
+    public void setCuratore(Curatore curatore) {
+        this.curatore = curatore;
+    }
+
+    public GestorePubblicazioni getGestorePubblicazioni() {
+        return gestorePubblicazioni;
+    }
+
+    public void setGestorePubblicazioni(GestorePubblicazioni gestorePubblicazioni) {
+        this.gestorePubblicazioni = gestorePubblicazioni;
+    }
+
     @Override
     public void inviaInformazioni(Componente sender, Messaggio event) {
-        if (event instanceof FileInformazioniTestuale info && sender instanceof Venditore) {
-            //chiama EmailSystem per inviare il messaggio
-            tokenInformazioni = EmailSystem.inviaMail(curatore.getEmail(),"Esito richiesta per  " + info.getNome(),"Contenuto da approvare: " + info.getContenuto());
-
-            if (curatore.approvaInformazioni(info, (Venditore) sender, info.getProdotto())){
-                gestorePubblicazioni.inviaInformazioni(sender,event);
-                sender.riceviMessaggio("Informazioni approvate per il prodotto: " + info.getNome());
-                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "Le informazioni sono state aggiunte al prodotto :" + info.getNome());
-            }else
-                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");
-        }
-        if (event instanceof FileInformazioniImmagini info && sender instanceof Venditore) {
-            //chiama EmailSystem per inviare il messaggio
-            tokenInformazioni = EmailSystem.inviaMail(curatore.getEmail(),"Esito richiesta per  " + info.getNome(),"Contenuto da approvare: " + info.getContenuto());
-            if (curatore.approvaInformazioni(info, (Venditore) sender, info.getProdotto())){
-                gestorePubblicazioni.inviaInformazioni(sender,event);
-                sender.riceviMessaggio("Immagini approvate per il prodotto: " + info.getNome());
-                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "Le immagini sono state aggiunte al prodotto :" + info.getNome());
-            }else
-                EmailSystem.inviaMail(sender.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");
-        }
+        // Reindirizza al gestore delle pubblicazioni per approvazione
+        gestorePubblicazioni.inviaInformazioni(sender, event);
     }
 
     @Override
-    public void inviaProdotto(Componente mittente, Messaggio event) {
-        if (event instanceof FileInformazioniProdotto info && (mittente instanceof Produttore || mittente instanceof Trasformatore trasformatore1) ) {
-            tokenProdotto = EmailSystem.inviaMail(curatore.getEmail(), "Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
-            if (curatore.approvaProdotto(info, (Venditore) mittente)){
-                gestorePubblicazioni.inviaProdotto(mittente,event);
-                mittente.riceviMessaggio("Informazioni approvate per il prodotto: " + info.getNome());
-                EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "Il prodotto è stato pubblicato :" + info.getNome());
-            }else
-                EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");;
-        }
-
+    public void inviaProdotto(Componente sender, Messaggio event) {
+        // Reindirizza al gestore delle pubblicazioni per approvazione
+        gestorePubblicazioni.inviaProdotto(sender, event);
     }
 
     @Override
-    public void inviaPacchetto(Componente mittente, Messaggio event) {
-        if (event instanceof FileInformazioniPacchetto info && (mittente instanceof DistributoreDiTipicita )) {
-            tokenPacchetto= EmailSystem.inviaMail(curatore.getEmail(), "Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
-            if (curatore.approvaPacchetto(info, (DistributoreDiTipicita) mittente)){
-                gestorePubblicazioni.inviaPacchetto(mittente,event);
-                mittente.riceviMessaggio("Informazioni approvate per il pacchetto: " + info.getNome());
-                EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "Il pacchetto è stato pubblicato :" + info.getNome());
-            }else
-                EmailSystem.inviaMail(mittente.getEmail(), "Richiesta approvazione", "La richiesta di pubblicare: " + info.getContenuto() + " è stata rifiutata");;
+    public void inviaPacchetto(Componente sender, Messaggio event) {
+        // Reindirizza al gestore delle pubblicazioni per approvazione
+        gestorePubblicazioni.inviaPacchetto(sender, event);
+    }
+
+    // Metodo usato da GestorePubblicazioni dopo approvazione
+    public void creaProdotto(FileInformazioniProdotto info, Componente sender) {
+        Prodotto prodotto = new Prodotto(info.getNome(), info.getAzienda());
+        Marketplace.aggiungiProdotto(prodotto);
+        sender.riceviMessaggio("Prodotto creato: " + info.getNome());
+    }
+
+    public void creaPacchetto(FileInformazioniPacchetto info, Componente sender) {
+        Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPrezzo(), info.getProdotti());
+        Marketplace.aggiungiPacchetto(pacchetto);
+        sender.riceviMessaggio("Pacchetto creato: " + info.getNome());
+    }
+
+    public void creaInformazioni(Messaggio info, Componente sender) {
+        if (info instanceof FileInformazioniImmagini immagini) {
+            immagini.getProdotto().aggiungiInformazioni(immagini);
+            sender.riceviMessaggio("Immagini aggiunte per il prodotto: " + immagini.getNome());
+        } else if (info instanceof FileInformazioniTestuale testo) {
+            testo.getProdotto().aggiungiInformazioni(testo);
+            sender.riceviMessaggio("Testo aggiunto per il prodotto: " + testo.getNome());
         }
     }
 }

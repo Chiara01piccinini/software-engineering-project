@@ -3,17 +3,17 @@ package org.example.app.controls;
 import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-//fa da mediator all'interno del pattern
 public class GestorePubblicazioni implements IGestore {
     private Curatore curatore;
     private EmailSystem notifiche;
-    private Messaggio messaggio;
+    private GestoreCreazioni gestoreCreazioni;
 
-    public GestorePubblicazioni(Curatore curatore, EmailSystem notifiche, Messaggio messaggio) {
+    public GestorePubblicazioni(Curatore curatore, EmailSystem notifiche) {
         this.curatore = curatore;
         this.notifiche = notifiche;
-        this.messaggio = messaggio;
     }
 
     public Curatore getCuratore() {
@@ -24,7 +24,6 @@ public class GestorePubblicazioni implements IGestore {
         this.curatore = curatore;
     }
 
-
     public EmailSystem getNotifiche() {
         return notifiche;
     }
@@ -33,50 +32,78 @@ public class GestorePubblicazioni implements IGestore {
         this.notifiche = notifiche;
     }
 
-    public void attendiRisposta(String token){
-        //attende una risposta dal curatore facendo pooling ogni 30 sec per 20 volte
-        Boolean approvato = null;
-        int maxTentativi = 20;
+    public GestoreCreazioni getGestoreCreazioni() {
+        return gestoreCreazioni;
+    }
+
+    public void setGestoreCreazioni(GestoreCreazioni gestoreCreazioni) {
+        this.gestoreCreazioni = gestoreCreazioni;
+    }
+
+    // Polling rimane qui
+    private Boolean attendiRisposta(String token, Date dataInvio) {
+        int maxTentativi = 10;
         int tentativo = 0;
-
-        while (tentativo < maxTentativi && approvato == null) {
-            try {
-                Thread.sleep(30000); // 30 secondi
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            approvato = EmailSystem.leggiRispostaApprova(token);
+        long delaySeconds = 30;
+        final long maxDelaySeconds = 600;
+        Boolean approvato = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try { Thread.sleep(30000); } catch (InterruptedException ignored) {}
+        while (tentativo < maxTentativi) {
+            System.out.println("[DEBUG] Tentativo " + (tentativo + 1) + " - Ora sistema: " + sdf.format(new Date()));
+            approvato = EmailSystem.leggiRispostaApprova(token, dataInvio);
+            if (approvato != null) break;
+            try { Thread.sleep(delaySeconds * 1000); } catch (InterruptedException e) { break; }
+            delaySeconds = Math.min(delaySeconds * 2, maxDelaySeconds);
             tentativo++;
         }
+        return approvato;
     }
 
     @Override
     public void inviaInformazioni(Componente sender, Messaggio event) {
-        this.attendiRisposta(GestoreCreazioni.getTokenInformazioni());
-
         if (event instanceof FileInformazioniTestuale info) {
-            info.getProdotto().aggiungiInformazioni(info);
-        } else if (event instanceof FileInformazioniImmagini info){
-            info.getProdotto().aggiungiInformazioni(info);
+            Date dataInvio = new Date();
+            // usa il Curatore solo per inviare mail e ricevere token
+            String token = curatore.richiediApprovazione("Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
+            Boolean approvato = attendiRisposta(token, dataInvio);
+            if (Boolean.TRUE.equals(approvato)) {
+                gestoreCreazioni.creaInformazioni(info, sender);
+                EmailSystem.inviaMail(sender.getEmail(), "Informazioni approvate", "Le informazioni sono state aggiunte per il prodotto: " + info.getNome());
+            } else {
+                EmailSystem.inviaMail(sender.getEmail(), "Informazioni rifiutate", "La richiesta è stata rifiutata");
+            }
         }
     }
 
     @Override
     public void inviaProdotto(Componente sender, Messaggio event) {
-        this.attendiRisposta(GestoreCreazioni.getTokenProdotto());
         if (event instanceof FileInformazioniProdotto info) {
-            Prodotto prodotto = new Prodotto(info.getNome(), info.getAzienda());
-            Marketplace.aggiungiProdotto(prodotto);
+            Date dataInvio = new Date();
+            String token = curatore.richiediApprovazione("Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
+            Boolean approvato = attendiRisposta(token, dataInvio);
+            // usa curatore solo come validatore senza polling
+            if (Boolean.TRUE.equals(approvato) && curatore.approvaProdotto(info, (Venditore) sender)) {
+                gestoreCreazioni.creaProdotto(info, sender);
+                EmailSystem.inviaMail(sender.getEmail(), "Prodotto approvato", "Il prodotto è stato pubblicato: " + info.getNome());
+            } else {
+                EmailSystem.inviaMail(sender.getEmail(), "Prodotto rifiutato", "La richiesta è stata rifiutata");
+            }
         }
     }
+
     @Override
     public void inviaPacchetto(Componente sender, Messaggio event) {
-        this.attendiRisposta(GestoreCreazioni.getTokenPacchetto());
-        if(event instanceof FileInformazioniPacchetto info){
-            Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPrezzo(),info.getProdotti());
-            Marketplace.aggiungiPacchetto(pacchetto);
+        if (event instanceof FileInformazioniPacchetto info) {
+            Date dataInvio = new Date();
+            String token = curatore.richiediApprovazione("Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
+            Boolean approvato = attendiRisposta(token, dataInvio);
+            if (Boolean.TRUE.equals(approvato) && curatore.approvaPacchetto(info, (DistributoreDiTipicita) sender)) {
+                gestoreCreazioni.creaPacchetto(info, sender);
+                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
+            } else {
+                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
+            }
         }
-
     }
 }

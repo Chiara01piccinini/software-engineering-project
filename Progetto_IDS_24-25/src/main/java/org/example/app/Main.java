@@ -1,42 +1,41 @@
 package org.example.app;
 
-import org.example.app.controls.GestoreCreazioni;
-import org.example.app.controls.GestorePubblicazioni;
+import org.example.app.controls.*;
 import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
 
-import javax.tools.JavaFileManager;
-import javax.xml.stream.Location;
-import java.io.IOException;
+public class
+Main {
+    public static void main(String[] args) {
+        // Crea Curatore (riceverà la richiesta via email)
+        Curatore curatore = new Curatore("Mario", "Rossi", 1234, "mrzpccnn@gmail.com");
 
-public class Main {
-public static void main(String[] args) {
-    Prodotto prodotto = new Prodotto( "Scarpa X", new Azienda("Nike", "nvr"));
-    Curatore curatore = new Curatore("Mario", "Rossi", 123, "mrzpccnn@gmail.com", null);
-    Venditore venditore = new Produttore("Luca", "Bianchi", 456, "venditore@gmail.com", new Azienda("barbagianni", "hdf"), null);
-    Azienda azienda = new Azienda("Farabollini", "5vfkgjeji");
+        // Crea sistema email
+        EmailSystem emailSystem = new EmailSystem();
 
-    ProdottoBase pb = new ProdottoBase("Rucola", azienda, (Produttore) venditore);
-    System.out.println(pb.getId());
-    EmailSystem emailSystem = new EmailSystem();
-    GestorePubblicazioni gestore = new GestorePubblicazioni(curatore, emailSystem, prodotto);
-    GestoreCreazioni gestoreCreazioni = new GestoreCreazioni(gestore, curatore);
+        // Crea gestore pubblicazioni
+        GestorePubblicazioni gestorePubblicazioni = new GestorePubblicazioni(curatore, emailSystem);
 
-    FileInformazioniTestuale descrizione = new FileInformazioniTestuale("Descrizione bellissima scarpa", prodotto);
-    FileInformazioniProdotto nuovoProdotto = new FileInformazioniProdotto("Pomodoro", azienda);
-    System.out.println("==> Invio descrizione per approvazione");
-    gestoreCreazioni.inviaInformazioni(venditore, descrizione);
-    gestoreCreazioni.inviaProdotto(venditore, nuovoProdotto);
-    gestore.inviaInformazioni(venditore, descrizione);
-    gestore.inviaProdotto(venditore,nuovoProdotto);
+        // Crea gestore creazioni e collega con pubblicazioni
+        GestoreCreazioni gestoreCreazioni = new GestoreCreazioni(gestorePubblicazioni,curatore);
+        gestorePubblicazioni.setGestoreCreazioni(gestoreCreazioni);
 
-    if (prodotto.getDescrizione() != null) {
-        System.out.println(" Descrizione prodotto approvata: " + prodotto.getDescrizione().getContenuto());
-    } else {
-        System.out.println(" Descrizione prodotto NON approvata.");
+        // Inizializza marketplace
+        Marketplace marketplace = new Marketplace(gestoreCreazioni);
+
+        // Crea azienda e venditore
+        Azienda aziendaTest = new Azienda("aziendaTest", "1256789");
+        Produttore venditore = new Produttore("Luca", "Bianchi", 123456, "luca.bianchi@example.com", aziendaTest);
+
+        // Crea le informazioni prodotto (da approvare via email)
+        FileInformazioniProdotto infoProdotto = new FileInformazioniProdotto("ProdottoTest", aziendaTest);
+
+        // Invia il prodotto (partirà la mail, il sistema attenderà la risposta)
+        venditore.inviaProdotto(gestorePubblicazioni, infoProdotto);
+
+        // Stampa finale dopo possibile approvazione
+        System.out.println("\n--- Prodotti nel Marketplace ---");
+        Marketplace.getProdotti().values().forEach(p ->
+                System.out.println("Prodotto: " + p.getNome() + ", Azienda: " + p.getAzienda()));
     }
-
-
-}
-
 }

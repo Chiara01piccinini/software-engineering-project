@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
 //rappresenta il comportamento del file immagine ,in linea con il pattern strategy
-public class FileInformazioniImmagini implements IFileInformazioni  {
+public class FileInformazioniImmagini implements Messaggio  {
     private String pathImmagine;
     private Prodotto prodotto;
 

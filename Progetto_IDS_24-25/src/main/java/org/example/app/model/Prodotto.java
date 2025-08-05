@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 //rappresenta tutti i prodotti che possono essre caricati
-public class Prodotto implements Messaggio {
+public class Prodotto {
     private final UUID id;
     private String nome;
     private Azienda azienda;
@@ -59,10 +59,13 @@ public class Prodotto implements Messaggio {
     }
 
     //modifica le informazioni del prodotto
-    public void aggiungiInformazioni(IFileInformazioni fileInfo) {
-        if (fileInfo instanceof FileInformazioniTestuale) {
-           setDescrizione((FileInformazioniTestuale) fileInfo);
-        } else if (fileInfo instanceof FileInformazioniImmagini immagine) {
-           setFoto((FileInformazioniImmagini) fileInfo);}
+    public void aggiungiInformazioni(Messaggio file) {
+        if (file instanceof FileInformazioniTestuale testuale)
+            this.descrizione = testuale;
+        else if (file instanceof FileInformazioniImmagini immagini)
+            this.foto = immagini;
+    }
+    public String getContenuto() {
+        return "Prodotto{" + "nome='" + nome + '\'' + ", azienda=" + azienda + '}';
     }
 }

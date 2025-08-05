@@ -3,7 +3,7 @@ package org.example.app.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class FileInformazioniPacchetto implements IFileInformazioni{
+public class FileInformazioniPacchetto implements Messaggio{
     private String nome;
     private BigDecimal prezzo;
     private List<Prodotto> prodotti;

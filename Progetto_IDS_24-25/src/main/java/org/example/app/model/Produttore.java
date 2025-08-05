@@ -5,8 +5,8 @@ import org.example.app.controls.IGestore;
 public class Produttore extends Venditore {
     final Azienda azienda;
 
-    public Produttore(String nome, String cognome, int matricola, String email, Azienda azienda, IGestore gestore) {
-        super(nome, cognome, matricola, email, gestore);
+    public Produttore(String nome, String cognome, int matricola, String email, Azienda azienda) {
+        super(nome, cognome, matricola, email);
         this.azienda = azienda;
     }
 

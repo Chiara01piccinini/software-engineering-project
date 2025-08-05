@@ -1,6 +1,6 @@
 package org.example.app.model;
 
-public class FileInformazioniProdotto implements IFileInformazioni{
+public class FileInformazioniProdotto implements Messaggio{
 
     private String nome;
     private Azienda azienda;
