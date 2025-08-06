@@ -1,16 +1,19 @@
 package org.example.app.model;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
 //rappresenta tutti i prodotti che possono essre caricati
-public class Prodotto {
+public class Prodotto implements IElemento{
     private final UUID id;
     private String nome;
     private Azienda azienda;
-    private Boolean vendita=false;
+    private Boolean vendita = false;
     private FileInformazioniTestuale descrizione;
     private FileInformazioniImmagini foto;
+    private BigDecimal prezzo;
+    private int quantita;
 
     public Prodotto(String nome, Azienda azienda) {
         this.id = UUID.randomUUID();
@@ -58,6 +61,22 @@ public class Prodotto {
         this.foto = foto;
     }
 
+    public BigDecimal calcolaPrezzo(){
+        return prezzo;
+    }
+
+    public void setPrezzo(BigDecimal newPrezzo){
+        this.prezzo = newPrezzo;
+    }
+
+    public int getQuantita(){
+        return quantita;
+    }
+
+    public void setQuantita(int quantita){
+        this.quantita = quantita;
+    }
+
     //modifica le informazioni del prodotto
     public void aggiungiInformazioni(Messaggio file) {
         if (file instanceof FileInformazioniTestuale testuale)
@@ -65,6 +84,7 @@ public class Prodotto {
         else if (file instanceof FileInformazioniImmagini immagini)
             this.foto = immagini;
     }
+
     public String getContenuto() {
         return "Prodotto{" + "nome='" + nome + '\'' + ", azienda=" + azienda + '}';
     }

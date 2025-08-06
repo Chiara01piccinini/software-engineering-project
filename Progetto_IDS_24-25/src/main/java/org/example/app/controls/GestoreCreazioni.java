@@ -48,15 +48,24 @@ public class GestoreCreazioni implements IGestore {
 
     // Metodo usato da GestorePubblicazioni dopo approvazione
     public void creaProdotto(FileInformazioniProdotto info, Componente sender) {
-        Prodotto prodotto = new Prodotto(info.getNome(), info.getAzienda());
-        Marketplace.aggiungiProdotto(prodotto);
+        if (sender instanceof Produttore produttore){
+            ProdottoBase prodottoBase = new ProdottoBase(info.getNome(), info.getAzienda(), produttore);
+            Marketplace.aggiungiProdotto(prodottoBase);
+        } else if (sender instanceof  Trasformatore trasformatore){
+            ProdottoElaborato prodottoElaborato = new ProdottoElaborato(info.getNome(), info.getAzienda(), trasformatore);
+            Marketplace.aggiungiProdotto(prodottoElaborato);
+        }
         sender.riceviMessaggio("Prodotto creato: " + info.getNome());
     }
 
     public void creaPacchetto(FileInformazioniPacchetto info, Componente sender) {
-        Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPrezzo(), info.getProdotti());
-        Marketplace.aggiungiPacchetto(pacchetto);
-        sender.riceviMessaggio("Pacchetto creato: " + info.getNome());
+        if (info.getProdotti().size() > 1){
+            for (int i = 0; i < info.getQuantita(); i++){
+                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti());
+                Marketplace.aggiungiPacchetto(pacchetto);
+            }
+            sender.riceviMessaggio("Pacchetto creato: " + info.getNome());
+        }
     }
 
     public void creaInformazioni(Messaggio info, Componente sender) {

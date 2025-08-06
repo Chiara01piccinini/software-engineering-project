@@ -11,7 +11,7 @@ public abstract class Componente {
     private String email;
 
 
-    public Componente( String nome, String cognome, int matricola, String email) {
+    public Componente(String nome, String cognome, int matricola, String email) {
         this.nome = nome;
         this.cognome = cognome;
         this.matricola = matricola;

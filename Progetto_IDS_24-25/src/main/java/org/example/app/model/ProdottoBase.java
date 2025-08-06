@@ -1,16 +1,14 @@
 package org.example.app.model;
 
-import org.example.app.controls.IGestore;
-
-import javax.xml.stream.Location;
-import java.util.UUID;
-
 public class ProdottoBase extends Prodotto{
-    private Produttore produttore;
+    private final Produttore produttore;
 
-    public ProdottoBase( String nome, org.example.app.model.Azienda azienda, Produttore produttore) {
+    public ProdottoBase( String nome, Azienda azienda, Produttore produttore) {
         super(nome, azienda);
         this.produttore = produttore;
     }
 
+    public Produttore getProduttore() {
+        return produttore;
+    }
 }

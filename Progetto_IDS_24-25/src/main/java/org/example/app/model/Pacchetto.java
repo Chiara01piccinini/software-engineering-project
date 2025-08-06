@@ -1,20 +1,29 @@
 package org.example.app.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
-public class Pacchetto {
+public class Pacchetto implements IElemento{
     private String nome;
     private final UUID id;
     private BigDecimal prezzo;
-    private List<Prodotto> prodotti;
+    private final BigDecimal percentualeSconto;
+    private Set<Prodotto> prodotti;
     private FileInformazioniTestuale descrizione;
 
-    public Pacchetto(String nome, BigDecimal prezzo, List<Prodotto> prodotti) {
+    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti){
+        for (Prodotto p : prodotti){
+            if (p.getVendita() == false){
+                throw new RuntimeException();
+            }
+        }
+
         this.nome = nome;
         this.id = UUID.randomUUID();
-        this.prezzo = prezzo;
+        this.percentualeSconto = percentualeSconto;
         this.prodotti = prodotti;
     }
 
@@ -30,15 +39,18 @@ public class Pacchetto {
         return id;
     }
 
-    public BigDecimal getPrezzo() {
-        return prezzo;
+    public BigDecimal calcolaPrezzo() {
+        for (Prodotto p : prodotti){
+            prezzo = prezzo.add(p.calcolaPrezzo());
+        }
+        return prezzo.multiply(percentualeSconto).divide(new BigDecimal( 100), RoundingMode.HALF_UP);
     }
 
     public void setPrezzo(BigDecimal prezzo) {
         this.prezzo = prezzo;
     }
 
-    public List<Prodotto> getProdotti() {
+    public Set<Prodotto> getProdotti() {
         return prodotti;
     }
 
@@ -58,9 +70,10 @@ public class Pacchetto {
         return "Pacchetto: " + nome + ", Prodotti: [" + prodottiStr + "], Prezzo: " + prezzo + ", Descrizione: " + desc;
     }
 
-    public void setProdotti(List<Prodotto> prodotti) {
+    public void setProdotti(Set<Prodotto> prodotti) {
         this.prodotti = prodotti;
     }
+
     public void aggiungiInformazioni(Messaggio info) {
         if (info instanceof FileInformazioniTestuale) {
             setDescrizione((FileInformazioniTestuale) info);
