@@ -2,7 +2,6 @@ package org.example.app.controls;
 
 import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -90,6 +89,7 @@ public class GestorePubblicazioni implements IGestore {
                 EmailSystem.inviaMail(sender.getEmail(), "Prodotto rifiutato", "La richiesta è stata rifiutata");
             }
         }
+
     }
 
     @Override
@@ -104,6 +104,35 @@ public class GestorePubblicazioni implements IGestore {
             } else {
                 EmailSystem.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
             }
+        }
+    }
+    public void inviaEvento (Animatore sender,Messaggio event){
+        if(event instanceof FileInformazioniEvento info && sender instanceof Animatore){
+            Date dataInvio = new Date();
+            String token = curatore.richiediApprovazione("Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
+            Boolean approvato=attendiRisposta(token,dataInvio);
+            if (Boolean.TRUE.equals(approvato) && curatore.approvaEvento(info, sender)) {
+                gestoreCreazioni.creaEvento(info, sender);
+                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
+            } else {
+                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
+            }
+
+        }
+
+    }
+    public void inviaAccount(Componente sender,Messaggio event){
+        if(event instanceof FileInformazioniAccount info){
+            Date dataInvio = new Date();
+            String token = curatore.richiediApprovazione("Richiesta approvazione", "Contenuto da approvare: " + info.getContenuto());
+            Boolean approvato=attendiRisposta(token,dataInvio);
+            if (Boolean.TRUE.equals(approvato) && curatore.approvaAccount(info, sender)) {
+                gestoreCreazioni.creaAccount(info, sender);
+                EmailSystem.inviaMail(sender.getEmail(), "Account approvato", "l'account è stato pubblicato: " + info.getContenuto());
+            } else {
+                EmailSystem.inviaMail(sender.getEmail(), "Account rifiutato", "La richiesta è stata rifiutata");
+            }
+
         }
     }
 }

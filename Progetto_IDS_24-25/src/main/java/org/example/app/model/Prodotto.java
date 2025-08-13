@@ -1,7 +1,6 @@
 package org.example.app.model;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
 //rappresenta tutti i prodotti che possono essre caricati

@@ -1,41 +1,122 @@
 package org.example.app;
 
-import org.example.app.controls.*;
+import org.example.app.controls.GestoreAcquisti;
+import org.example.app.controls.GestoreCreazioni;
+import org.example.app.controls.GestorePubblicazioni;
 import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
+import org.example.app.view.SistemaPagamenti;
 
-public class
-Main {
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Main {
+
+    // Inizializzazione globale
+    static Marketplace marketplace = new Marketplace();
+    static Curatore curatore = new Curatore(new Account("curatore1", "pass", tipoAccount.GENERICO), 1, "EMAIL_CURATORE@gmail.com");
+    static GestorePubblicazioni gestorePubblicazioni = new GestorePubblicazioni(curatore, new EmailSystem());
+    static GestoreCreazioni gestoreCreazioni = new GestoreCreazioni(gestorePubblicazioni, curatore);
+
     public static void main(String[] args) {
-        // Crea Curatore (riceverà la richiesta via email)
-        Curatore curatore = new Curatore("Mario", "Rossi", 1234, "mrzpccnn@gmail.com");
-
-        // Crea sistema email
-        EmailSystem emailSystem = new EmailSystem();
-
-        // Crea gestore pubblicazioni
-        GestorePubblicazioni gestorePubblicazioni = new GestorePubblicazioni(curatore, emailSystem);
-
-        // Crea gestore creazioni e collega con pubblicazioni
-        GestoreCreazioni gestoreCreazioni = new GestoreCreazioni(gestorePubblicazioni,curatore);
         gestorePubblicazioni.setGestoreCreazioni(gestoreCreazioni);
 
-        // Inizializza marketplace
-        Marketplace marketplace = new Marketplace(gestoreCreazioni);
-
-        // Crea azienda e venditore
-        Azienda aziendaTest = new Azienda("aziendaTest", "1256789");
-        Produttore venditore = new Produttore("Luca", "Bianchi", 123456, "luca.bianchi@example.com", aziendaTest);
-
-        // Crea le informazioni prodotto (da approvare via email)
-        FileInformazioniProdotto infoProdotto = new FileInformazioniProdotto("ProdottoTest", aziendaTest);
-
-        // Invia il prodotto (partirà la mail, il sistema attenderà la risposta)
-        venditore.inviaProdotto(gestorePubblicazioni, infoProdotto);
-
-        // Stampa finale dopo possibile approvazione
-        System.out.println("\n--- Prodotti nel Marketplace ---");
-        Marketplace.getProdotti().values().forEach(p ->
-                System.out.println("Prodotto: " + p.getNome() + ", Azienda: " + p.getAzienda()));
+        testCreazioneAccount();
+        testCreazionePacchetto();
+        testAcquisto();
+        testPrenotazioneEvento();
     }
+
+    // ---------------------- TEST CREAZIONE ACCOUNT ----------------------
+    public static void testCreazioneAccount() {
+        System.out.println(">>> Test creazione account");
+        FileInformazioniAccount info = new FileInformazioniAccount("mario", "password123", "mario@email.com", tipoAccount.GENERICO);
+
+        Componente sender = new Produttore(new Account("produttore1", "pass", tipoAccount.PRODUTTORE), 1, "produttore@email.com", new Azienda("Azienda Mario", "cod123"));
+        gestoreCreazioni.creaAccount(info, sender);
+
+        marketplace.getAccount().forEach((id, account) -> {
+            System.out.println("ID: " + id + ", Username: " + account.getNomeUtente() + ", Tipo: " + account.getTipologia());
+        });
+        System.out.println();
+    }
+
+    // ---------------------- TEST CREAZIONE PACCHETTO ----------------------
+    public static void testCreazionePacchetto() {
+        System.out.println(">>> Test creazione pacchetto");
+
+        // Prodotti
+        Produttore produttore = new Produttore(new Account("prod1", "pass", tipoAccount.PRODUTTORE), 1, "prod1@email.com", new Azienda("Frutta", "cod1"));
+        Trasformatore trasformatore = new Trasformatore(new Account("tras1", "pass", tipoAccount.TRASFORMATORE), 2, "tras1@email.com", new Azienda("Salumi", "cod2"));
+
+        Prodotto p1 = new ProdottoBase("Pere", produttore.getAzienda(), produttore);
+        Prodotto p2 = new ProdottoElaborato("Salame Toscano", trasformatore.getAzienda(), trasformatore);
+
+        Set<Prodotto> prodotti = new HashSet<>();
+        prodotti.add(p1);
+        prodotti.add(p2);
+
+        FileInformazioniPacchetto pacchettoInfo = new FileInformazioniPacchetto("Degustazione Tipica", BigDecimal.valueOf(10), prodotti, 5);
+
+        gestorePubblicazioni.inviaPacchetto(produttore, pacchettoInfo);
+        System.out.println();
+    }
+
+    // ---------------------- TEST ACQUISTO ----------------------
+    public static void testAcquisto() {
+        System.out.println(">>> Test acquisto prodotto e pacchetto");
+
+        Componente acquirente = new Componente(new Account("acquirente1", "pass", tipoAccount.GENERICO), 1, "acquirente@email.com");
+
+        // Prodotto
+        Produttore produttore = new Produttore(new Account("prod2", "pass", tipoAccount.PRODUTTORE), 2, "prod2@email.com", new Azienda("Frutta2", "cod3"));
+        Prodotto prodotto = new ProdottoBase("Mele Golden", produttore.getAzienda(), produttore);
+        prodotto.setPrezzo(BigDecimal.valueOf(2.5));
+        prodotto.setVendita(true);
+        marketplace.aggiungiProdotto(prodotto);
+
+        // Pacchetto
+        Set<Prodotto> pacchettoProdotti = new HashSet<>();
+        pacchettoProdotti.add(prodotto);
+        Pacchetto pacchetto = new Pacchetto("Pacchetto Degustazione", BigDecimal.valueOf(10), pacchettoProdotti);
+        pacchetto.setPrezzo(BigDecimal.valueOf(2.5));
+        marketplace.aggiungiPacchetto(pacchetto);
+
+        GestoreAcquisti gestoreAcquisti = new GestoreAcquisti(new SistemaPagamenti(), marketplace);
+        gestoreAcquisti.acquistaProdotto(acquirente, prodotto, 3);
+        gestoreAcquisti.acquistaPacchetto(acquirente, pacchetto);
+
+        System.out.println();
+    }
+
+    // ---------------------- TEST PRENOTAZIONE EVENTO ----------------------
+    public static void testPrenotazioneEvento() {
+        System.out.println(">>> Test prenotazione evento");
+
+        // Creazione dati necessari
+        Date dataEvento = new Date(); // data odierna, puoi modificarla
+        LocalDateTime orarioEvento = LocalDateTime.now().plusDays(1); // domani
+        Position luogoEvento = new Position("luogo evento",45.4642, 9.1900); // esempio coordinate
+        String nomeEvento = "Concerto Rock";
+        int bigliettiEvento = 100;
+
+        // Creazione animatore
+        Animatore animatore = new Animatore(new Account("anim1", "pass", tipoAccount.ANIMATORE), 1, "animatore@email.com");
+
+        // Creazione evento usando il costruttore completo
+        Evento evento = new Evento(dataEvento, orarioEvento, luogoEvento, nomeEvento, bigliettiEvento);
+
+        // Aggiunta al marketplace
+        marketplace.aggiungiEvento(evento);
+
+        // Test biglietti
+        System.out.println("Biglietti iniziali: " + evento.getBiglietti());
+        evento.rimuoviBiglietto(3);
+        System.out.println("Biglietti rimasti: " + evento.getBiglietti());
+        System.out.println();
+    }
+
 }

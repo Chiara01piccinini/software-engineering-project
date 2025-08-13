@@ -1,25 +1,34 @@
 package org.example.app.model;
 
-import org.example.app.controls.GestoreCreazioni;
-import org.example.app.controls.GestorePubblicazioni;
-import org.example.app.controls.IGestore;
+import java.util.ArrayList;
 
 //rappresenta le classi che si scambiano messaggi all'interno del pattern mediator
-public abstract class Componente {
-    private String nome, cognome;
+public class Componente {
+    private Account account;
     private int matricola;
     private String email;
+    private String nome;
+    private String cognome;
+    private ArrayList<String> prenotazioni;
+    private Marketplace sistema;
 
-
-    public Componente(String nome, String cognome, int matricola, String email) {
-        this.nome = nome;
-        this.cognome = cognome;
+    public Componente(Account account, int matricola,String email) {
+        this.account = account;
         this.matricola = matricola;
-        this.email = email;
+        this.email=email;
+        this.prenotazioni= new ArrayList<>();
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String getEmail() {
-        return email;
+        return  email;
     }
 
     public void setEmail(String email) {
@@ -50,5 +59,29 @@ public abstract class Componente {
         this.matricola = matricola;
     }
 
-    public abstract void riceviMessaggio(String messaggio);
+    public void getPrenotazioni() {
+        for(int i=0; i < this.prenotazioni.size();i++){
+            System.out.println(prenotazioni.get(i));
+        }
+        return;
+    }
+    public void prenotaEvento(Evento evento,int np){
+        if(evento.getBiglietti()>= np){
+            evento.setBiglietti(evento.getBiglietti()-np);
+            System.out.println("prenotazione di"+np+"biglietti per l'evento"+evento.getNome()+"avvenuto");
+            prenotazioni.add(
+                    "prenotazione per"+evento.getNome()+"numero biglietti : " + np+"data :"+evento.getData()+"orario :" +
+                            evento.getOrario()+ "luogo :" + evento.getLuogo().getNome());
+        }
+
+    }
+    public void visualizzaContenuti(){
+        this.sistema.getProdotti();
+        this.sistema.getEventi();
+        this.sistema.getPacchetti();
+    }
+
+    public  void riceviMessaggio(String messaggio){
+            System.out.println("[Messaggio]: " + messaggio);
+    };
 }

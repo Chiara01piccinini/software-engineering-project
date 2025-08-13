@@ -4,8 +4,8 @@ import org.example.app.view.EmailSystem;
 import java.util.Date;
 
 public class Curatore extends Componente {
-    public Curatore(String nome, String cognome, int matricola, String email) {
-        super(nome, cognome, matricola, email);
+    public Curatore(Account account, int matricola, String email) {
+        super(account, matricola, email);
     }
 
     // Solo invia la mail e restituisce il token
@@ -38,5 +38,15 @@ public class Curatore extends Componente {
 
     public void confermaApprovazione(Messaggio info) {
         System.out.println("[Curatore] Approvazione ricevuta per: " + info.getNome());
+    }
+
+    public boolean approvaEvento(FileInformazioniEvento info, Animatore sender) {
+        System.out.println("[Curatore] approvaEvento chiamato"+info.getNome());
+        return true;
+    }
+
+    public boolean approvaAccount(FileInformazioniAccount info, Componente sender) {
+        System.out.println("[Curatore] approvaAccount " + info.getContenuto());
+        return true;
     }
 }
