@@ -84,7 +84,7 @@ public class GestoreCreazioni implements IGestore {
     public void creaPacchetto(FileInformazioniPacchetto info, Componente sender) {
         if (info.getProdotti().size() > 1){
             for (int i = 0; i < info.getQuantita(); i++){
-                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti());
+                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti(),info.getQuantita());
                 Marketplace.aggiungiPacchetto(pacchetto);
             }
             sender.riceviMessaggio("Pacchetto creato: " + info.getNome());
@@ -110,19 +110,27 @@ public class GestoreCreazioni implements IGestore {
     }
 
     public void creaAccount(FileInformazioniAccount info, Componente sender) {
+        if (sender == null || info == null) {
+            System.out.println("Errore: sender o info null");
+            return;
+        }
         tipoAccount tipo;
         if (sender instanceof Produttore) {
             tipo = tipoAccount.PRODUTTORE;
-            mappa.getMappa().put(
-                    ((Produttore) sender).getAzienda().getPosition(),
-                    ((Produttore) sender).getAzienda().getName()
-            );
+            if (((Produttore) sender).getAzienda() != null && mappa != null && mappa.getMappa() != null) {
+                mappa.getMappa().put(
+                        ((Produttore) sender).getAzienda().getPosition(),
+                        ((Produttore) sender).getAzienda().getName()
+                );
+            }
         } else if (sender instanceof Trasformatore) {
             tipo = tipoAccount.TRASFORMATORE;
-            mappa.getMappa().put(
-                    ((Trasformatore) sender).getAzienda().getPosition(),
-                    ((Trasformatore) sender).getAzienda().getName()
-            );
+            if (((Trasformatore) sender).getAzienda() != null && mappa != null && mappa.getMappa() != null) {
+                mappa.getMappa().put(
+                        ((Trasformatore) sender).getAzienda().getPosition(),
+                        ((Trasformatore) sender).getAzienda().getName()
+                );
+            }
         } else if (sender instanceof DistributoreDiTipicita) {
             tipo = tipoAccount.DISTRIBUTOREDITIPICITA;
         } else if (sender instanceof Animatore) {
@@ -131,11 +139,18 @@ public class GestoreCreazioni implements IGestore {
             tipo = tipoAccount.GENERICO;
         }
         Account account = new Account(info.getNomeUtente(), info.getPassword(), tipo);
-        sender.riceviMessaggio("account creato: " + info.getContenuto());
-        Marketplace.getAccount().put(account.getId(),account);
-    }
-    public void modificaDisponibilità(Prodotto prodotto,int nq){
 
-        prodotto.setQuantita(nq);
+        if (sender != null) sender.riceviMessaggio("account creato: " + info.getContenuto());
+
+        if (Marketplace.getAccount() != null) {
+            Marketplace.getAccount().put(account.getId(), account);
+
+        } else {
+            System.out.println("Errore: Marketplace.getAccount() non inizializzata");
+        }
+    }
+
+    public void modificaDisponibilità(IElemento prodotto,int nq){
+        prodotto.setQuantità(nq);
     }
 }

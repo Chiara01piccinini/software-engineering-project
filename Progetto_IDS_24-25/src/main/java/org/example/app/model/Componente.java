@@ -1,5 +1,8 @@
 package org.example.app.model;
 
+import org.example.app.controls.GestoreAcquisti;
+import org.example.app.controls.Session;
+
 import java.util.ArrayList;
 
 //rappresenta le classi che si scambiano messaggi all'interno del pattern mediator
@@ -66,6 +69,9 @@ public class Componente {
         return;
     }
     public void prenotaEvento(Evento evento,int np){
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
         if(evento.getBiglietti()>= np){
             evento.setBiglietti(evento.getBiglietti()-np);
             System.out.println("prenotazione di"+np+"biglietti per l'evento"+evento.getNome()+"avvenuto");
@@ -76,10 +82,50 @@ public class Componente {
 
     }
     public void visualizzaContenuti(){
-        this.sistema.getProdotti();
-        this.sistema.getEventi();
-        this.sistema.getPacchetti();
+        System.out.println(this.sistema.getProdotti());
+        System.out.println(this.sistema.getEventi());
+        System.out.println(this.sistema.getPacchetti());
     }
+    public void visualizzaProdotto(Prodotto prodotto){
+        if(sistema.getProdotti().containsValue(prodotto)){
+            System.out.println("visualizzazione prodotto:"+prodotto.getNome()+ prodotto.getFoto()+
+                    "azienda produttrice:" + prodotto.getAzienda()+
+                    "quantità disponibile : " + prodotto.getQuantità() +
+                    "prezzo: " + prodotto.getPrezzo()+
+                    "descrizione:"+  prodotto.getDescrizione());
+        }
+    }
+    public void visualizzaPacchetto(Pacchetto pacchetto){
+        if(sistema.getPacchetti().containsValue(pacchetto)){
+            System.out.println("visualizzazione pacchetto:"+pacchetto.getNome()+
+                    "quantità disponibile : " + pacchetto.getQuantità() +
+                    "descrizione:"+  pacchetto.getDescrizione()+
+                    "prodotti compresi:"+ pacchetto.getProdotti()+
+                    "prezzo:" + pacchetto.getPrezzo());
+        }
+    }
+    public void visualizzaEvento(Evento evento) {
+        if (sistema.getEventi().containsValue(evento)) {
+            System.out.println("visualizzazione evento:" + evento.getNome() +
+                            "posti disponibili : " + evento.getBiglietti() +
+                            "descrizione:" + evento.getDescrizione() +
+                            "data:" + evento.getData()+
+                            "orario:" + evento.getOrario() +
+                            "luogo:" + evento.getLuogo());
+        }
+    }
+
+    public void acquista(GestoreAcquisti gestore, IElemento elemento, int quantità) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        if (elemento instanceof Prodotto) {
+            gestore.acquistaProdotto(this, (Prodotto) elemento, quantità);
+        } else if (elemento instanceof Pacchetto) {
+            gestore.acquistaPacchetto(this, (Pacchetto) elemento, quantità);
+        }
+    }
+
 
     public  void riceviMessaggio(String messaggio){
             System.out.println("[Messaggio]: " + messaggio);

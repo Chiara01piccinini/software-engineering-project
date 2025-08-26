@@ -12,18 +12,35 @@ public class Pacchetto implements IElemento{
     private final BigDecimal percentualeSconto;
     private Set<Prodotto> prodotti;
     private FileInformazioniTestuale descrizione;
+    private int quantità;
 
-    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti){
+    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti,int quantità){
         for (Prodotto p : prodotti){
-            if (p.getVendita() == false){
+            if (p.getVendita() == false && p.getQuantità() < quantità){
                 throw new RuntimeException();
             }
         }
-
         this.nome = nome;
         this.id = UUID.randomUUID();
         this.percentualeSconto = percentualeSconto;
         this.prodotti = prodotti;
+        this.quantità=quantità;
+    }
+
+    public void setQuantità(int quantita) {
+        this.quantità = quantita;
+    }
+
+    public BigDecimal getPrezzo() {
+        return prezzo;
+    }
+
+    public BigDecimal getPercentualeSconto() {
+        return percentualeSconto;
+    }
+
+    public int getQuantità() {
+        return quantità;
     }
 
     public String getNome() {

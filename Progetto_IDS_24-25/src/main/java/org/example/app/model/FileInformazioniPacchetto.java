@@ -16,6 +16,22 @@ public class FileInformazioniPacchetto implements Messaggio{
         this.quantita = quantita;
     }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setPercentualeSconto(BigDecimal percentualeSconto) {
+        this.percentualeSconto = percentualeSconto;
+    }
+
+    public void setProdotti(Set<Prodotto> prodotti) {
+        this.prodotti = prodotti;
+    }
+
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
     public String getNome() {
         return nome;
     }

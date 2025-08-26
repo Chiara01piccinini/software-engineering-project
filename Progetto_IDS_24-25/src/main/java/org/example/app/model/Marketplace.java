@@ -1,5 +1,7 @@
 package org.example.app.model;
 import org.example.app.controls.IGestore;
+import org.example.app.view.MappaService;
+
 import java.util.*;
 
 public class Marketplace {
@@ -9,6 +11,23 @@ public class Marketplace {
     private static Map<UUID, Pacchetto> pacchetti = new LinkedHashMap<>();
     private static Map <UUID,Evento> eventi = new LinkedHashMap<>();
     private static Map <UUID,Account> profili = new LinkedHashMap<>();
+    private static MappaService mappa = new MappaService();
+
+    public static Map<UUID, Account> getProfili() {
+        return profili;
+    }
+
+    public static void setProfili(Map<UUID, Account> profili) {
+        Marketplace.profili = profili;
+    }
+
+    public static MappaService getMappa() {
+        return mappa;
+    }
+
+    public static void setMappa(MappaService mappa) {
+        Marketplace.mappa = mappa;
+    }
 
     public static Map<UUID, Account> getAccount() {
         return profili;

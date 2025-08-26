@@ -15,6 +15,7 @@ public class Account {
         this.password = password;
         this.carrello = new HashMap<>();
         this.tipologia = tipologia;
+        this.id = UUID.randomUUID(); // genera un ID unico
     }
 
     public void setCarrello(HashMap<IElemento, Integer> carrello) {

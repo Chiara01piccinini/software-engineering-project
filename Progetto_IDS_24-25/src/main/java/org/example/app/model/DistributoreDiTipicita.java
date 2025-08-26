@@ -9,7 +9,7 @@ public class DistributoreDiTipicita extends Venditore{
         super(account, matricola, email, azienda);
     }
 
-    public void inviaPacchetto(IGestore gestore, FileInformazioniPacchetto pacchetto){
+    public void inviaPacchetto(GestorePubblicazioni gestore, FileInformazioniPacchetto pacchetto){
         gestore.inviaPacchetto(this,pacchetto);
     }
 }

@@ -20,6 +20,18 @@ public class Prodotto implements IElemento{
         this.azienda = azienda;
     }
 
+    public BigDecimal getPrezzo() {
+        return prezzo;
+    }
+
+    public int getQuantita() {
+        return quantita;
+    }
+
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -68,11 +80,11 @@ public class Prodotto implements IElemento{
         this.prezzo = newPrezzo;
     }
 
-    public int getQuantita(){
+    public int getQuantità(){
         return quantita;
     }
 
-    public void setQuantita(int quantita){
+    public void setQuantità(int quantita){
         this.quantita = quantita;
     }
 

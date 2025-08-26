@@ -24,6 +24,9 @@ public class CredentialCheckHandler extends AuthHandler {
         }
 
         System.out.println("[Auth] Credenziali corrette");
+        // Se è l’ultimo passo con successo, salvo la sessione
+        Session.setCurrentUser(account);
+
         return checkNext(username, password);
     }
 }
