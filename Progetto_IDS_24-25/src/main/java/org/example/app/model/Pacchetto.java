@@ -1,5 +1,8 @@
 package org.example.app.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Set;
@@ -13,7 +16,8 @@ public class Pacchetto implements IElemento{
     private Set<Prodotto> prodotti;
     private FileInformazioniTestuale descrizione;
 
-    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti){
+    @JsonCreator
+    public Pacchetto(@JsonProperty("nome") String nome,@JsonProperty("sconto") BigDecimal percentualeSconto,@JsonProperty("prodotti") Set<Prodotto> prodotti,@JsonProperty("id") UUID id){
         for (Prodotto p : prodotti){
             if (p.getVendita() == false){
                 throw new RuntimeException();
@@ -21,9 +25,13 @@ public class Pacchetto implements IElemento{
         }
 
         this.nome = nome;
-        this.id = UUID.randomUUID();
+        this.id = id;
         this.percentualeSconto = percentualeSconto;
         this.prodotti = prodotti;
+    }
+
+    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti){
+        this(nome,percentualeSconto,prodotti,UUID.randomUUID());
     }
 
     public String getNome() {

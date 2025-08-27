@@ -5,7 +5,7 @@ import java.util.Map;
 
 
 public class MappaService {
-  private HashMap<Position,String>  mappa;
+  private HashMap<Position,String>  mappa = new HashMap<>();
 
     public HashMap<Position, String> getMappa() {
         return mappa;

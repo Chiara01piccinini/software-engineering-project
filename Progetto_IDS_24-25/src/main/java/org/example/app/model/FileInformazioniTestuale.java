@@ -2,11 +2,11 @@ package org.example.app.model;
 //rappresenta il comportamento del file testuale, in linea con il pattern startegy
 public class FileInformazioniTestuale implements Messaggio {
     private String contenuto;
-    private Prodotto prodotto;
+    private IElemento elemento;
 
-    public FileInformazioniTestuale(String contenuto, Prodotto prodotto) {
+    public FileInformazioniTestuale(String contenuto, IElemento elemento) {
         this.contenuto = contenuto;
-        this.prodotto = prodotto;
+        this.elemento = elemento;
     }
 
     public String getContenuto(){
@@ -14,11 +14,11 @@ public class FileInformazioniTestuale implements Messaggio {
     }
 
     public String getNome() {
-        return prodotto.getNome();
+        return elemento.getNome();
     }
 
-    public Prodotto getProdotto() {
-        return prodotto;
+    public IElemento getElemento() {
+        return elemento;
     }
 }
 

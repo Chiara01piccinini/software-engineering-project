@@ -7,4 +7,5 @@ public interface IElemento {
     public String getNome();
     public UUID getId();
     public BigDecimal calcolaPrezzo();
+    public void aggiungiInformazioni(Messaggio info);
 }

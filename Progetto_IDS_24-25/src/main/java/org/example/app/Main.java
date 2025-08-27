@@ -4,9 +4,11 @@ import org.example.app.controls.GestoreAcquisti;
 import org.example.app.controls.GestoreCreazioni;
 import org.example.app.controls.GestorePubblicazioni;
 import org.example.app.model.*;
+import org.example.app.model.JsonPersistence.PersistenceManager;
 import org.example.app.view.EmailSystem;
 import org.example.app.view.SistemaPagamenti;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -17,17 +19,30 @@ public class Main {
 
     // Inizializzazione globale
     static Marketplace marketplace = new Marketplace();
-    static Curatore curatore = new Curatore(new Account("curatore1", "pass", tipoAccount.GENERICO), 1, "EMAIL_CURATORE@gmail.com");
+    static Curatore curatore = new Curatore(new Account("curatore1", "pass", tipoAccount.GENERICO), 1, "EMAIL_CURATORE@gmail.com",new EmailSystem());
     static GestorePubblicazioni gestorePubblicazioni = new GestorePubblicazioni(curatore, new EmailSystem());
     static GestoreCreazioni gestoreCreazioni = new GestoreCreazioni(gestorePubblicazioni, curatore);
+    static PersistenceManager persistenceManager = new PersistenceManager();
 
     public static void main(String[] args) {
         gestorePubblicazioni.setGestoreCreazioni(gestoreCreazioni);
+
+        try {
+            persistenceManager.carica();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         testCreazioneAccount();
         testCreazionePacchetto();
         testAcquisto();
         testPrenotazioneEvento();
+
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // ---------------------- TEST CREAZIONE ACCOUNT ----------------------
@@ -42,6 +57,11 @@ public class Main {
             System.out.println("ID: " + id + ", Username: " + account.getNomeUtente() + ", Tipo: " + account.getTipologia());
         });
         System.out.println();
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // ---------------------- TEST CREAZIONE PACCHETTO ----------------------
@@ -63,6 +83,11 @@ public class Main {
 
         gestorePubblicazioni.inviaPacchetto(produttore, pacchettoInfo);
         System.out.println();
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // ---------------------- TEST ACQUISTO ----------------------
@@ -90,6 +115,11 @@ public class Main {
         gestoreAcquisti.acquistaPacchetto(acquirente, pacchetto);
 
         System.out.println();
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // ---------------------- TEST PRENOTAZIONE EVENTO ----------------------
@@ -102,12 +132,14 @@ public class Main {
         Position luogoEvento = new Position("luogo evento",45.4642, 9.1900); // esempio coordinate
         String nomeEvento = "Concerto Rock";
         int bigliettiEvento = 100;
+        String descrizione = "Vivi una serata di pura energia con musica live, band locali e i grandi classici del rock!\n" +
+                "Cibo genuino, atmosfera unica e prodotti tipici della nostra filiera ti aspettano per un’esperienza indimenticabile.";
 
         // Creazione animatore
         Animatore animatore = new Animatore(new Account("anim1", "pass", tipoAccount.ANIMATORE), 1, "animatore@email.com");
 
         // Creazione evento usando il costruttore completo
-        Evento evento = new Evento(dataEvento, orarioEvento, luogoEvento, nomeEvento, bigliettiEvento);
+        Evento evento = new Evento(dataEvento, orarioEvento, luogoEvento, nomeEvento, bigliettiEvento,descrizione);
 
         // Aggiunta al marketplace
         marketplace.aggiungiEvento(evento);
@@ -117,6 +149,11 @@ public class Main {
         evento.rimuoviBiglietto(3);
         System.out.println("Biglietti rimasti: " + evento.getBiglietti());
         System.out.println();
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -1,5 +1,8 @@
 package org.example.app.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -14,10 +17,15 @@ public class Prodotto implements IElemento{
     private BigDecimal prezzo;
     private int quantita;
 
-    public Prodotto(String nome, Azienda azienda) {
-        this.id = UUID.randomUUID();
+    @JsonCreator
+    public Prodotto(@JsonProperty("nome") String nome,@JsonProperty("azienza") Azienda azienda,@JsonProperty("id") UUID id) {
+        this.id = id;
         this.nome = nome;
         this.azienda = azienda;
+    }
+
+    public Prodotto (String nome, Azienda azienda){
+        this(nome,azienda,UUID.randomUUID());
     }
 
     public UUID getId() {
@@ -48,16 +56,8 @@ public class Prodotto implements IElemento{
         return descrizione;
     }
 
-    public void setDescrizione(FileInformazioniTestuale descrizione) {
-        this.descrizione = descrizione;
-    }
-
     public FileInformazioniImmagini getFoto() {
         return foto;
-    }
-
-    public void setFoto(FileInformazioniImmagini foto) {
-        this.foto = foto;
     }
 
     public BigDecimal calcolaPrezzo(){

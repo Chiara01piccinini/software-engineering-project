@@ -8,13 +8,15 @@ public class FileInformazioniEvento implements Messaggio {
     private Position luogo;
     private String nome;
     private int biglietti;
+    private String descrizione;
 
-    public FileInformazioniEvento(Date data, LocalDateTime orario, Position luogo, String nome,int biglietti) {
+    public FileInformazioniEvento(Date data, LocalDateTime orario, Position luogo, String nome,int biglietti, String descrizione) {
         this.data = data;
         this.orario = orario;
         this.luogo = luogo;
         this.nome = nome;
         this.biglietti=biglietti;
+        this.descrizione = descrizione;
     }
 
     public int getBiglietti() {
@@ -58,5 +60,14 @@ public class FileInformazioniEvento implements Messaggio {
         this.nome = nome;
     }
 
+    public void setDescrizione(String descrizione){
+        this.descrizione = descrizione;
+    }
+
+    public String getDescrizione(){
+        return descrizione;
+    }
+
+    @Override
     public String getContenuto() {return data.toString() + orario + luogo + nome; }
 }

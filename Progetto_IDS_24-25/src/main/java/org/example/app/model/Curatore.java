@@ -4,14 +4,20 @@ import org.example.app.view.EmailSystem;
 import java.util.Date;
 
 public class Curatore extends Componente {
-    public Curatore(Account account, int matricola, String email) {
+    private Account account;
+    private int matricola;
+    private String email;
+    private EmailSystem notifiche;
+
+    public Curatore(Account account, int matricola, String email,EmailSystem notifiche) {
         super(account, matricola, email);
+        this.notifiche = notifiche;
     }
 
     // Solo invia la mail e restituisce il token
     public String richiediApprovazione(String oggetto, String testo) {
         System.out.println("[Curatore] Invio richiesta approvazione...");
-        return EmailSystem.inviaMail(getEmail(), oggetto, testo);
+        return notifiche.inviaMail(getEmail(), oggetto, testo);
     }
 
     // Metodo di approvazione che ora è passivo e ritorna true/false basato su parametri esterni

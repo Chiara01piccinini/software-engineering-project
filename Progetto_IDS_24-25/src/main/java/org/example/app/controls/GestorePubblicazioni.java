@@ -50,7 +50,7 @@ public class GestorePubblicazioni implements IGestore {
         try { Thread.sleep(30000); } catch (InterruptedException ignored) {}
         while (tentativo < maxTentativi) {
             System.out.println("[DEBUG] Tentativo " + (tentativo + 1) + " - Ora sistema: " + sdf.format(new Date()));
-            approvato = EmailSystem.leggiRispostaApprova(token, dataInvio);
+            approvato = notifiche.leggiRispostaApprova(token, dataInvio);
             if (approvato != null) break;
             try { Thread.sleep(delaySeconds * 1000); } catch (InterruptedException e) { break; }
             delaySeconds = Math.min(delaySeconds * 2, maxDelaySeconds);
@@ -68,9 +68,9 @@ public class GestorePubblicazioni implements IGestore {
             Boolean approvato = attendiRisposta(token, dataInvio);
             if (Boolean.TRUE.equals(approvato)) {
                 gestoreCreazioni.creaInformazioni(info, sender);
-                EmailSystem.inviaMail(sender.getEmail(), "Informazioni approvate", "Le informazioni sono state aggiunte per il prodotto: " + info.getNome());
+                notifiche.inviaMail(sender.getEmail(), "Informazioni approvate", "Le informazioni sono state aggiunte per il prodotto: " + info.getNome());
             } else {
-                EmailSystem.inviaMail(sender.getEmail(), "Informazioni rifiutate", "La richiesta è stata rifiutata");
+                notifiche.inviaMail(sender.getEmail(), "Informazioni rifiutate", "La richiesta è stata rifiutata");
             }
         }
     }
@@ -84,9 +84,9 @@ public class GestorePubblicazioni implements IGestore {
             // usa curatore solo come validatore senza polling
             if (Boolean.TRUE.equals(approvato) && curatore.approvaProdotto(info, (Venditore) sender)) {
                 gestoreCreazioni.creaProdotto(info, sender);
-                EmailSystem.inviaMail(sender.getEmail(), "Prodotto approvato", "Il prodotto è stato pubblicato: " + info.getNome());
+                notifiche.inviaMail(sender.getEmail(), "Prodotto approvato", "Il prodotto è stato pubblicato: " + info.getNome());
             } else {
-                EmailSystem.inviaMail(sender.getEmail(), "Prodotto rifiutato", "La richiesta è stata rifiutata");
+                notifiche.inviaMail(sender.getEmail(), "Prodotto rifiutato", "La richiesta è stata rifiutata");
             }
         }
 
@@ -100,9 +100,9 @@ public class GestorePubblicazioni implements IGestore {
             Boolean approvato = attendiRisposta(token, dataInvio);
             if (Boolean.TRUE.equals(approvato) && curatore.approvaPacchetto(info, (DistributoreDiTipicita) sender)) {
                 gestoreCreazioni.creaPacchetto(info, sender);
-                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
+                notifiche.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
             } else {
-                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
+                notifiche.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
             }
         }
     }
@@ -113,9 +113,9 @@ public class GestorePubblicazioni implements IGestore {
             Boolean approvato=attendiRisposta(token,dataInvio);
             if (Boolean.TRUE.equals(approvato) && curatore.approvaEvento(info, sender)) {
                 gestoreCreazioni.creaEvento(info, sender);
-                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
+                notifiche.inviaMail(sender.getEmail(), "Pacchetto approvato", "Il pacchetto è stato pubblicato: " + info.getNome());
             } else {
-                EmailSystem.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
+                notifiche.inviaMail(sender.getEmail(), "Pacchetto rifiutato", "La richiesta è stata rifiutata");
             }
 
         }
@@ -128,9 +128,9 @@ public class GestorePubblicazioni implements IGestore {
             Boolean approvato=attendiRisposta(token,dataInvio);
             if (Boolean.TRUE.equals(approvato) && curatore.approvaAccount(info, sender)) {
                 gestoreCreazioni.creaAccount(info, sender);
-                EmailSystem.inviaMail(sender.getEmail(), "Account approvato", "l'account è stato pubblicato: " + info.getContenuto());
+                notifiche.inviaMail(sender.getEmail(), "Account approvato", "l'account è stato pubblicato: " + info.getContenuto());
             } else {
-                EmailSystem.inviaMail(sender.getEmail(), "Account rifiutato", "La richiesta è stata rifiutata");
+                notifiche.inviaMail(sender.getEmail(), "Account rifiutato", "La richiesta è stata rifiutata");
             }
 
         }

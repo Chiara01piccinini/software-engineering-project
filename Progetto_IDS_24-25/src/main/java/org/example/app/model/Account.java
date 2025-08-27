@@ -1,23 +1,32 @@
 package org.example.app.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.HashMap;
 import java.util.UUID;
 
 public class Account {
     private String nomeUtente;
     private String password;
-    private HashMap<IElemento, Integer> carrello;
+    private HashMap<UUID, Integer> carrello;
     private tipoAccount tipologia;
     private UUID id;
 
-    public Account(String nomeUtente, String password, tipoAccount tipologia) {
+    @JsonCreator
+    public Account(@JsonProperty("nomeUtente") String nomeUtente,@JsonProperty("password") String password,@JsonProperty("tipologia") tipoAccount tipologia,@JsonProperty("id") UUID id,@JsonProperty("carrello") HashMap<UUID, Integer> carrello ) {
         this.nomeUtente = nomeUtente;
         this.password = password;
-        this.carrello = new HashMap<>();
+        this.carrello = carrello;
         this.tipologia = tipologia;
+        this.id = id;
     }
 
-    public void setCarrello(HashMap<IElemento, Integer> carrello) {
+    public Account(String nomeUtente, String password, tipoAccount tipologia){
+        this(nomeUtente,password,tipologia,UUID.randomUUID(),new HashMap<>());
+    }
+
+    public void setCarrello(HashMap<UUID, Integer> carrello) {
         this.carrello = carrello;
     }
 
@@ -53,13 +62,13 @@ public class Account {
         this.password = password;
     }
 
-    public HashMap<IElemento, Integer> getCarrello() {
+    public HashMap<UUID, Integer> getCarrello() {
         return carrello;
     }
 
     public void aggiungiElemento(IElemento elemento, Integer quantita) {
         if (elemento != null && quantita > 0 ){
-        carrello.put(elemento, quantita);
+        carrello.put(elemento.getId(), quantita);
         }
     }
 }

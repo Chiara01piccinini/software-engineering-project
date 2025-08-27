@@ -1,5 +1,5 @@
 package org.example.app.model;
-import org.example.app.controls.IGestore;
+
 import java.util.*;
 
 public class Marketplace {
@@ -15,15 +15,15 @@ public class Marketplace {
     }
 
     public static void setAccount(Map<UUID, Account> account) {
-        Marketplace.profili = account;
+        profili = account;
     }
 
     public static Map<UUID, Evento> getEventi() {
         return eventi;
     }
 
-    public static void setEventi(Map<UUID, Evento> eventi) {
-        Marketplace.eventi = eventi;
+    public static void setEventi(Map<UUID, Evento> nuoviEventi) {
+        eventi = nuoviEventi;
     }
 
 
