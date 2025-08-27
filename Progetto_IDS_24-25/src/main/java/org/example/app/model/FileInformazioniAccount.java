@@ -4,26 +4,17 @@ public class FileInformazioniAccount implements Messaggio {
     private String nomeUtente;
     private String password;
     private String email;
-    private tipoAccount tipologia;
 
-    public FileInformazioniAccount(String nomeUtente, String password, String email,tipoAccount tipologia) {
+    public FileInformazioniAccount(String nomeUtente, String password, String email) {
         this.nomeUtente = nomeUtente;
         this.password = password;
         this.email = email;
-        this.tipologia=tipologia;
     }
 
     public String getNomeUtente() {
         return nomeUtente;
     }
 
-    public  tipoAccount getTipologia() {
-        return tipologia;
-    }
-
-    public void setTipologia(tipoAccount tipologia) {
-        this.tipologia = tipologia;
-    }
 
     public String getNome() {
         return nomeUtente;
