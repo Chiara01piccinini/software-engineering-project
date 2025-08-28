@@ -7,4 +7,8 @@ public class ProdottoElaborato extends Prodotto{
                 super(nome, azienda);
                 this.trasformatore = trasformatore;
         }
+
+        public Trasformatore getTrasformatore() {
+                return trasformatore;
+        }
 }

@@ -6,6 +6,7 @@ import org.example.app.view.SistemaPagamenti;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.UUID;
 
 public class GestoreAcquisti {
 
@@ -23,7 +24,7 @@ public class GestoreAcquisti {
             return;
         }
 
-        if (quantità > prodotto.getQuantità()) {
+        if (quantità > prodotto.getQuantita()) {
             componente.riceviMessaggio("Quantità richiesta non disponibile per: " + prodotto.getNome());
             return;
         }
@@ -35,8 +36,8 @@ public class GestoreAcquisti {
             componente.riceviMessaggio("Pagamento effettuato con successo per "
                     + quantità + "x " + prodotto.getNome());
 
-            prodotto.setQuantità(prodotto.getQuantità() - quantità);
-            if (prodotto.getQuantità() <= 0) {
+            prodotto.setQuantita(prodotto.getQuantita() - quantità);
+            if (prodotto.getQuantita() <= 0) {
                 marketplace.rimuoviProdotto(prodotto.getId());
             }
         } else {
@@ -45,7 +46,7 @@ public class GestoreAcquisti {
     }
 
     public void acquistaPacchetto(Componente componente, Pacchetto pacchetto, int quantità) {
-        if (quantità > pacchetto.getQuantità()) {
+        if (quantità > pacchetto.getQuantita()) {
             componente.riceviMessaggio("Quantità richiesta non disponibile per il pacchetto: " + pacchetto.getNome());
             return;
         }
@@ -57,8 +58,8 @@ public class GestoreAcquisti {
             componente.riceviMessaggio("Pagamento effettuato con successo per "
                     + quantità + "x Pacchetto: " + pacchetto.getNome());
 
-            pacchetto.setQuantità(pacchetto.getQuantità() - quantità);
-            if (pacchetto.getQuantità() <= 0) {
+            pacchetto.setQuantita(pacchetto.getQuantita() - quantità);
+            if (pacchetto.getQuantita() <= 0) {
                 marketplace.rimuoviPacchetto(pacchetto.getId());
             }
         } else {
@@ -70,14 +71,15 @@ public class GestoreAcquisti {
         BigDecimal totale = BigDecimal.ZERO;
 
         // Verifica disponibilità prima di procedere
-        for (Map.Entry<IElemento, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
-            IElemento item = entry.getKey();
+            for (Map.Entry<UUID, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
+            UUID id = entry.getKey();
             int quantita = entry.getValue();
 
-            if (item instanceof Prodotto p && quantita > p.getQuantità()) {
+            IElemento item = Marketplace.getElementoById(id);
+            if (item instanceof Prodotto p && quantita > p.getQuantita()) {
                 componente.riceviMessaggio("Quantità richiesta non disponibile per: " + p.getNome());
                 return;
-            } else if (item instanceof Pacchetto pac && quantita > pac.getQuantità()) {
+            } else if (item instanceof Pacchetto pac && quantita > pac.getQuantita()) {
                 componente.riceviMessaggio("Quantità richiesta non disponibile per il pacchetto: " + pac.getNome());
                 return;
             }
@@ -88,9 +90,10 @@ public class GestoreAcquisti {
         boolean tuttiPagamentiRiusciti = true;
 
         // Pagamento singolo per ogni elemento
-        for (Map.Entry<IElemento, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
-            IElemento item = entry.getKey();
+        for (Map.Entry<UUID, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
+            UUID id = entry.getKey();
             int quantita = entry.getValue();
+            IElemento item = Marketplace.getElementoById(id);
             BigDecimal importo = item.calcolaPrezzo().multiply(BigDecimal.valueOf(quantita));
 
             boolean esito = sistemaPagamenti.eseguiPagamento(componente, item, importo);
@@ -103,18 +106,19 @@ public class GestoreAcquisti {
         if (tuttiPagamentiRiusciti) {
             componente.riceviMessaggio("Pagamento carrello completato. Totale speso: " + totale + " EUR");
 
-            for (Map.Entry<IElemento, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
-                IElemento item = entry.getKey();
+            for (Map.Entry<UUID, Integer> entry : componente.getAccount().getCarrello().entrySet()) {
+                UUID id = entry.getKey();
                 int quantita = entry.getValue();
+                IElemento item = Marketplace.getElementoById(id);
 
                 if (item instanceof Prodotto p) {
-                    p.setQuantità(p.getQuantità() - quantita);
-                    if (p.getQuantità() <= 0) {
+                    p.setQuantita(p.getQuantita() - quantita);
+                    if (p.getQuantita() <= 0) {
                         marketplace.rimuoviProdotto(p.getId());
                     }
                 } else if (item instanceof Pacchetto pac) {
-                    pac.setQuantità(pac.getQuantità() - quantita);
-                    if (pac.getQuantità() <= 0) {
+                    pac.setQuantita(pac.getQuantita() - quantita);
+                    if (pac.getQuantita() <= 0) {
                         marketplace.rimuoviPacchetto(pac.getId());
                     }
                 }

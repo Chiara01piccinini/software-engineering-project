@@ -6,6 +6,7 @@ public class Position {
     private double longitudine;
 
     public Position(String nome,double latitudine, double longitudine) {
+        this.nome = nome;
         this.latitudine = latitudine;
         this.longitudine = longitudine;
     }

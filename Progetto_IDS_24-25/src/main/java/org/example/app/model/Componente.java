@@ -20,6 +20,7 @@ public class Componente {
         this.matricola = matricola;
         this.email=email;
         this.prenotazioni= new ArrayList<>();
+        this.sistema = new Marketplace();
     }
 
     public Account getAccount() {
@@ -90,18 +91,18 @@ public class Componente {
         if(sistema.getProdotti().containsValue(prodotto)){
             System.out.println("visualizzazione prodotto:"+prodotto.getNome()+ prodotto.getFoto()+
                     "azienda produttrice:" + prodotto.getAzienda()+
-                    "quantità disponibile : " + prodotto.getQuantità() +
-                    "prezzo: " + prodotto.getPrezzo()+
+                    "quantità disponibile : " + prodotto.getQuantita() +
+                    "prezzo: " + prodotto.calcolaPrezzo()+
                     "descrizione:"+  prodotto.getDescrizione());
         }
     }
     public void visualizzaPacchetto(Pacchetto pacchetto){
         if(sistema.getPacchetti().containsValue(pacchetto)){
             System.out.println("visualizzazione pacchetto:"+pacchetto.getNome()+
-                    "quantità disponibile : " + pacchetto.getQuantità() +
+                    "quantità disponibile : " + pacchetto.getQuantita() +
                     "descrizione:"+  pacchetto.getDescrizione()+
                     "prodotti compresi:"+ pacchetto.getProdotti()+
-                    "prezzo:" + pacchetto.getPrezzo());
+                    "prezzo:" + pacchetto.calcolaPrezzo());
         }
     }
     public void visualizzaEvento(Evento evento) {

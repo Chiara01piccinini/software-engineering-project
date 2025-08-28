@@ -48,9 +48,10 @@ public class Main {
     // ---------------------- TEST CREAZIONE ACCOUNT ----------------------
     public static void testCreazioneAccount() {
         System.out.println(">>> Test creazione account");
-        FileInformazioniAccount info = new FileInformazioniAccount("mario", "password123", "mario@email.com", tipoAccount.GENERICO);
+        FileInformazioniAccount info = new FileInformazioniAccount("mario", "password123", "mario@email.com");
+        Position luogoAzienda = new Position("luogo azienda 1",45.482, 9.1520);
 
-        Componente sender = new Produttore(new Account("produttore1", "pass", tipoAccount.PRODUTTORE), 1, "produttore@email.com", new Azienda("Azienda Mario", "cod123"));
+        Componente sender = new Produttore(new Account("produttore1", "pass", tipoAccount.PRODUTTORE), 1, "produttore@email.com", new Azienda("Azienda Mario",luogoAzienda, "cod123"));
         gestoreCreazioni.creaAccount(info, sender);
 
         marketplace.getAccount().forEach((id, account) -> {
@@ -67,10 +68,12 @@ public class Main {
     // ---------------------- TEST CREAZIONE PACCHETTO ----------------------
     public static void testCreazionePacchetto() {
         System.out.println(">>> Test creazione pacchetto");
+        Position luogoAzienda1 = new Position("luogo azienda 1",15.46, 9.10);
+        Position luogoAzienda2 = new Position("luogo azienda 2",56.256, 4.10);
 
         // Prodotti
-        Produttore produttore = new Produttore(new Account("prod1", "pass", tipoAccount.PRODUTTORE), 1, "prod1@email.com", new Azienda("Frutta", "cod1"));
-        Trasformatore trasformatore = new Trasformatore(new Account("tras1", "pass", tipoAccount.TRASFORMATORE), 2, "tras1@email.com", new Azienda("Salumi", "cod2"));
+        Produttore produttore = new Produttore(new Account("prod1", "pass", tipoAccount.PRODUTTORE), 1, "prod1@email.com", new Azienda("Frutta", luogoAzienda1,"cod1"));
+        Trasformatore trasformatore = new Trasformatore(new Account("tras1", "pass", tipoAccount.TRASFORMATORE), 2, "tras1@email.com", new Azienda("Salumi", luogoAzienda2,"cod2"));
 
         Prodotto p1 = new ProdottoBase("Pere", produttore.getAzienda(), produttore);
         Prodotto p2 = new ProdottoElaborato("Salame Toscano", trasformatore.getAzienda(), trasformatore);
@@ -95,9 +98,10 @@ public class Main {
         System.out.println(">>> Test acquisto prodotto e pacchetto");
 
         Componente acquirente = new Componente(new Account("acquirente1", "pass", tipoAccount.GENERICO), 1, "acquirente@email.com");
+        Position luogoAzienda = new Position("luogo azienda",4.4, 9.9);
 
         // Prodotto
-        Produttore produttore = new Produttore(new Account("prod2", "pass", tipoAccount.PRODUTTORE), 2, "prod2@email.com", new Azienda("Frutta2", "cod3"));
+        Produttore produttore = new Produttore(new Account("prod2", "pass", tipoAccount.PRODUTTORE), 2, "prod2@email.com", new Azienda("Frutta2", luogoAzienda,"cod3"));
         Prodotto prodotto = new ProdottoBase("Mele Golden", produttore.getAzienda(), produttore);
         prodotto.setPrezzo(BigDecimal.valueOf(2.5));
         prodotto.setVendita(true);
@@ -106,13 +110,13 @@ public class Main {
         // Pacchetto
         Set<Prodotto> pacchettoProdotti = new HashSet<>();
         pacchettoProdotti.add(prodotto);
-        Pacchetto pacchetto = new Pacchetto("Pacchetto Degustazione", BigDecimal.valueOf(10), pacchettoProdotti);
+        Pacchetto pacchetto = new Pacchetto("Pacchetto Degustazione", BigDecimal.valueOf(10), pacchettoProdotti,2);
         pacchetto.setPrezzo(BigDecimal.valueOf(2.5));
         marketplace.aggiungiPacchetto(pacchetto);
 
         GestoreAcquisti gestoreAcquisti = new GestoreAcquisti(new SistemaPagamenti(), marketplace);
         gestoreAcquisti.acquistaProdotto(acquirente, prodotto, 3);
-        gestoreAcquisti.acquistaPacchetto(acquirente, pacchetto);
+        gestoreAcquisti.acquistaPacchetto(acquirente, pacchetto,1);
 
         System.out.println();
         try {

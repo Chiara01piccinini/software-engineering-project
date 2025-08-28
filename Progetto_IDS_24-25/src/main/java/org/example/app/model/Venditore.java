@@ -33,7 +33,7 @@ public abstract class Venditore  extends Componente{
         if (p != null && prezzo.compareTo(BigDecimal.ZERO) > 0 && quantita > 0) {
             p.setPrezzo(prezzo);
             p.setVendita(true);
-            p.setQuantità(quantita);
+            p.setQuantita(quantita);
             return true;
         }
         return false;

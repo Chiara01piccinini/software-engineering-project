@@ -84,7 +84,7 @@ public class GestoreCreazioni implements IGestore {
     public void creaPacchetto(FileInformazioniPacchetto info, Componente sender) {
         if (info.getProdotti().size() > 1){
             for (int i = 0; i < info.getQuantita(); i++){
-                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti());
+                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti(), info.getQuantita());
                 sistema.aggiungiPacchetto(pacchetto);
             }
             sender.riceviMessaggio("Pacchetto creato: " + info.getNome());

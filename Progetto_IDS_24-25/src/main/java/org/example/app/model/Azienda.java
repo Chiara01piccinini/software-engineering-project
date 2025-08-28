@@ -6,7 +6,7 @@ public class Azienda {
     private Position position;
     private String PI;
 
-    public Azienda (String name, String PI){
+    public Azienda (String name,Position position, String PI){
         this.name = name;
        this.position = position;
         this.PI = PI;

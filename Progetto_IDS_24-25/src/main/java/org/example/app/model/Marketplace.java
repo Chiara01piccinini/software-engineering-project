@@ -54,6 +54,16 @@ public class Marketplace {
         }
     }
 
+    public static IElemento getElementoById(UUID id) {
+        if (prodotti.containsKey(id)) {
+            return prodotti.get(id);
+        } else if (pacchetti.containsKey(id)) {
+            return pacchetti.get(id);
+        } else {
+            return null;
+        }
+    }
+
     public static Map<UUID, Pacchetto> getPacchetti() {
         return pacchetti;
     }

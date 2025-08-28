@@ -15,9 +15,10 @@ public class Pacchetto implements IElemento{
     private final BigDecimal percentualeSconto;
     private Set<Prodotto> prodotti;
     private FileInformazioniTestuale descrizione;
+    private int quantita;
 
     @JsonCreator
-    public Pacchetto(@JsonProperty("nome") String nome,@JsonProperty("sconto") BigDecimal percentualeSconto,@JsonProperty("prodotti") Set<Prodotto> prodotti,@JsonProperty("id") UUID id){
+    public Pacchetto(@JsonProperty("nome") String nome,@JsonProperty("sconto") BigDecimal percentualeSconto,@JsonProperty("prodotti") Set<Prodotto> prodotti,@JsonProperty("id") UUID id, @JsonProperty("quantità") int quantita){
         for (Prodotto p : prodotti){
             if (p.getVendita() == false){
                 throw new RuntimeException();
@@ -28,10 +29,11 @@ public class Pacchetto implements IElemento{
         this.id = id;
         this.percentualeSconto = percentualeSconto;
         this.prodotti = prodotti;
+        this.quantita = quantita;
     }
 
-    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti){
-        this(nome,percentualeSconto,prodotti,UUID.randomUUID());
+    public Pacchetto(String nome, BigDecimal percentualeSconto, Set<Prodotto> prodotti, int quantita){
+        this(nome,percentualeSconto,prodotti,UUID.randomUUID(),quantita);
     }
 
     public String getNome() {
@@ -79,6 +81,14 @@ public class Pacchetto implements IElemento{
 
     public void setProdotti(Set<Prodotto> prodotti) {
         this.prodotti = prodotti;
+    }
+
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
+    public int getQuantita(){
+        return quantita;
     }
 
     public void aggiungiInformazioni(Messaggio info) {

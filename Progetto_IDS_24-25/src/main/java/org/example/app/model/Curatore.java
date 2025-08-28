@@ -4,9 +4,6 @@ import org.example.app.view.EmailSystem;
 import java.util.Date;
 
 public class Curatore extends Componente {
-    private Account account;
-    private int matricola;
-    private String email;
     private EmailSystem notifiche;
 
     public Curatore(Account account, int matricola, String email,EmailSystem notifiche) {
