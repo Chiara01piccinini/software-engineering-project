@@ -5,7 +5,7 @@ public class FileInformazioniAccount implements Messaggio {
     private String password;
     private String email;
 
-    public FileInformazioniAccount(String nomeUtente, String password, String email) {
+    public FileInformazioniAccount(String nomeUtente, String password, String email,tipoAccount tipo) {
         this.nomeUtente = nomeUtente;
         this.password = password;
         this.email = email;

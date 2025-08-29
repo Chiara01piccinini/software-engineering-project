@@ -102,9 +102,18 @@ public class Marketplace {
     public static void aggiungiAccount(Account account){
         if (!profili.containsKey(account.getId())) {
             profili.put(account.getId(), account);
-            System.out.println("Evento pubblicato: " + account.getNomeUtente());
+            System.out.println("Account pubblicato: " + account.getNomeUtente());
         } else {
-            System.out.println(" Evento già presente: " + account.getNomeUtente());
+            System.out.println("Account già presente: " + account.getNomeUtente());
         }
+    }
+
+    public Account getAccountByUsername(String username) {
+        for (Account account : profili.values()) {
+            if (account.getNomeUtente().equals(username)) {
+                return account;
+            }
+        }
+        return null; // account non trovato
     }
 }

@@ -1,6 +1,7 @@
 package org.example.app.model;
 
 import org.example.app.controls.GestoreAcquisti;
+import org.example.app.controls.GestoreCreazioni;
 import org.example.app.controls.Session;
 
 import java.util.ArrayList;
@@ -15,8 +16,7 @@ public class Componente {
     private ArrayList<String> prenotazioni;
     private Marketplace sistema;
 
-    public Componente(Account account, int matricola,String email) {
-        this.account = account;
+    public Componente( int matricola,String email) {
         this.matricola = matricola;
         this.email=email;
         this.prenotazioni= new ArrayList<>();
@@ -67,20 +67,19 @@ public class Componente {
         for(int i=0; i < this.prenotazioni.size();i++){
             System.out.println(prenotazioni.get(i));
         }
-        return;
     }
+
     public void prenotaEvento(Evento evento,int np){
         if (!Session.isAuthenticated()) {
             throw new SecurityException("Operazione non consentita: utente non autenticato");
         }
         if(evento.getBiglietti()>= np){
             evento.setBiglietti(evento.getBiglietti()-np);
-            System.out.println("prenotazione di"+np+"biglietti per l'evento"+evento.getNome()+"avvenuto");
+            System.out.println(" prenotazione di "+np+" biglietti per l'evento "+evento.getNome()+" avvenuta");
             prenotazioni.add(
-                    "prenotazione per"+evento.getNome()+"numero biglietti : " + np+"data :"+evento.getData()+"orario :" +
+                    "prenotazione per "+evento.getNome()+" numero biglietti : " + np+" data : "+evento.getData()+" orario :" +
                             evento.getOrario()+ "luogo :" + evento.getLuogo().getNome());
         }
-
     }
     public void visualizzaContenuti(){
         System.out.println(this.sistema.getProdotti());
@@ -126,8 +125,6 @@ public class Componente {
             gestore.acquistaPacchetto(this, (Pacchetto) elemento, quantità);
         }
     }
-
-
     public  void riceviMessaggio(String messaggio){
             System.out.println("[Messaggio]: " + messaggio);
     };

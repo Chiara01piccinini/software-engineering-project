@@ -23,12 +23,10 @@ public class GestoreAcquisti {
             componente.riceviMessaggio("Prodotto non in vendita: " + prodotto.getNome());
             return;
         }
-
         if (quantità > prodotto.getQuantita()) {
             componente.riceviMessaggio("Quantità richiesta non disponibile per: " + prodotto.getNome());
             return;
         }
-
         BigDecimal totale = prodotto.calcolaPrezzo().multiply(BigDecimal.valueOf(quantità));
         boolean esito = sistemaPagamenti.eseguiPagamento(componente, prodotto, totale);
 

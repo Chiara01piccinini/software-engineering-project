@@ -4,7 +4,7 @@ import org.example.app.model.Account;
 import org.example.app.model.Marketplace;
 import org.example.app.model.tipoAccount;
 
-public class RoleCheckHandler extends AuthHandler{
+public class RoleCheckHandler extends AuthHandler {
     private Marketplace sistema;
 
     public RoleCheckHandler(Marketplace sistema) {
@@ -13,16 +13,23 @@ public class RoleCheckHandler extends AuthHandler{
 
     @Override
     public boolean check(String username, String password) {
-        Account account = sistema.getAccount().get(username);
+        Account account = null;
+        for (Account acc : Marketplace.getAccount().values()) {
+            if (acc.getNomeUtente().equals(username)) {
+                account = acc;
+                break;
+            }
+        }
 
         if (account == null) {
             System.out.println("[Auth] Utente non trovato");
             return false;
         }
-        tipoAccount role = account.getTipologia();
-        System.out.println("[Auth] Tipo account: " + role);
 
-        return checkNext(username, password);
+        System.out.println("[Auth] Tipo account: " + account.getTipologia());
+
+        return checkNext(username, password); // passa al prossimo handler
     }
 }
+
 

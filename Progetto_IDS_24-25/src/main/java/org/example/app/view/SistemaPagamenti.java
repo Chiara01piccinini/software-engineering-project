@@ -13,7 +13,7 @@ public class SistemaPagamenti {
         if (elemento instanceof Prodotto) {
             nomeAzienda = ((Prodotto) elemento).getAzienda().getName();
         } else if (elemento instanceof Pacchetto) {
-            nomeAzienda = "Pacchetto di " + ((Pacchetto) elemento).getProdotti().iterator().next().getAzienda().getName();
+            nomeAzienda =  ((Pacchetto) elemento).getProdotti().iterator().next().getAzienda().getName();
         }
 
         System.out.println("[SistemaPagamenti] Inizio pagamento per l'azienda: " + nomeAzienda);

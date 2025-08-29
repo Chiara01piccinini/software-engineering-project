@@ -1,55 +1,62 @@
 package org.example.app.model;
 
+import org.example.app.controls.Session;
 import org.example.app.view.EmailSystem;
-import java.util.Date;
 
 public class Curatore extends Componente {
+    private Account account;
     private EmailSystem notifiche;
 
-    public Curatore(Account account, int matricola, String email,EmailSystem notifiche) {
-        super(account, matricola, email);
+    public Curatore(Account account, int matricola, String email, EmailSystem notifiche) {
+        super(matricola, email);
+        this.account = account;
         this.notifiche = notifiche;
     }
 
-    // Solo invia la mail e restituisce il token
-    public String richiediApprovazione(String oggetto, String testo) {
-        System.out.println("[Curatore] Invio richiesta approvazione...");
-        return notifiche.inviaMail(getEmail(), oggetto, testo);
-    }
-
-    // Metodo di approvazione che ora è passivo e ritorna true/false basato su parametri esterni
-    public Boolean approvaProdotto(FileInformazioniProdotto prodotto, Venditore venditore) {
-        System.out.println("[Curatore] approvaProdotto chiamato, ma non esegue polling.");
-        // Solo segnaposto, la vera approvazione è gestita dal Gestore
+    public boolean approvaProdotto(FileInformazioniProdotto prodotto, Venditore sender) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        if (sender == null || sender.getEmail() == null || !sender.getEmail().contains("@")) {
+            System.out.println("[Curatore] Mittente non valido");
+            return false;
+        }
+        if (prodotto == null || prodotto.getNome() == null || prodotto.getContenuto() == null) {
+            System.out.println("[Curatore] Dati prodotto non validi");
+            return false;
+        }
         return true;
     }
 
-    public Boolean approvaPacchetto(FileInformazioniPacchetto pacchetto, DistributoreDiTipicita distributore) {
-        System.out.println("[Curatore] approvaPacchetto chiamato, ma non esegue polling.");
+    public boolean approvaPacchetto(FileInformazioniPacchetto pacchetto, DistributoreDiTipicita sender) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        if (sender == null || sender.getEmail() == null) return false;
+        if (pacchetto == null || pacchetto.getNome() == null || pacchetto.getContenuto() == null) return false;
         return true;
     }
 
-    public Boolean approvaInformazioni(Messaggio info, Venditore venditore, Prodotto prodotto) {
-        System.out.println("[Curatore] approvaInformazioni chiamato, ma non esegue polling.");
+    public boolean approvaEvento(FileInformazioniEvento evento, Animatore sender) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        if (sender == null || sender.getEmail() == null) return false;
+        if (evento == null || evento.getNome() == null || evento.getContenuto() == null) return false;
+        return true;
+    }
+
+    public boolean approvaAccount(FileInformazioniAccount info, Componente sender) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        if (sender == null || sender.getEmail() == null) return false;
+        if (info == null || info.getContenuto() == null) return false;
         return true;
     }
 
     @Override
     public void riceviMessaggio(String messaggio) {
         System.out.println("[Curatore]: " + messaggio);
-    }
-
-    public void confermaApprovazione(Messaggio info) {
-        System.out.println("[Curatore] Approvazione ricevuta per: " + info.getNome());
-    }
-
-    public boolean approvaEvento(FileInformazioniEvento info, Animatore sender) {
-        System.out.println("[Curatore] approvaEvento chiamato"+info.getNome());
-        return true;
-    }
-
-    public boolean approvaAccount(FileInformazioniAccount info, Componente sender) {
-        System.out.println("[Curatore] approvaAccount " + info.getContenuto());
-        return true;
     }
 }

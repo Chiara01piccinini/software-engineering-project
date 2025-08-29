@@ -1,9 +1,6 @@
 package org.example.app.controls;
 
-import org.example.app.model.Marketplace;
-import org.example.app.model.Messaggio;
-import org.example.app.model.Piattaforme;
-import org.example.app.model.Venditore;
+import org.example.app.model.*;
 import org.example.app.view.EmailSystem;
 import org.example.app.view.SistemaSponsorizzazioni;
 
@@ -38,11 +35,11 @@ public class GestoreSponsorizzazioni {
     public void setEmail(EmailSystem email) {
         this.email = email;
     }
-    public void pubbliacaContenuto(Venditore venditore, Messaggio messaggio, Piattaforme piattaforma){
+    public void pubbliacaContenuto(Venditore venditore, IElemento messaggio, Piattaforme piattaforma){
         if (ecommerce.getAccount().containsKey(venditore.getAccount().getId())){
             System.out.println("[GestoreSponsorizzazioni] Richiesta ricevuta dal venditore: " + venditore.getNome());
             sistema.pubblica(messaggio,piattaforma);
-            email.inviaMail(venditore.getEmail(),"contenuto pubblicato","il prodotto" + messaggio.getContenuto() +
+            email.inviaMail(venditore.getEmail(),"contenuto pubblicato","il prodotto" + messaggio.getNome() +
                     " è stato pubblicato su " +  piattaforma);
         }
     }

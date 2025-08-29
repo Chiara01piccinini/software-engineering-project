@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public abstract class Venditore  extends Componente{
     private Azienda azienda;
     public Venditore(Account account, int matricola, String email,Azienda azienda) {
-        super(account, matricola, email);
+        super( matricola, email);
         this.azienda=azienda;
     }
 
@@ -39,7 +39,7 @@ public abstract class Venditore  extends Componente{
         return false;
     }
     public void richiediSponsorizzazione(GestoreSponsorizzazioni gestore,
-                                         Messaggio messaggio,
+                                         IElemento messaggio,
                                          Piattaforme tipo) {
         if (!Session.isAuthenticated()) {
         throw new SecurityException("Operazione non consentita: utente non autenticato");
@@ -73,4 +73,5 @@ public abstract class Venditore  extends Componente{
         if (prodotto.getAzienda()==this.azienda && prodotto.getVendita() ){
             prodotto.setPrezzo(np);}
     }
+
 }

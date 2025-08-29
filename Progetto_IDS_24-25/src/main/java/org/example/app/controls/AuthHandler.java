@@ -15,6 +15,7 @@ public abstract class AuthHandler {
         return next.check(username, password);
     }
 
+
     public abstract boolean check(String username, String password);
 }
 

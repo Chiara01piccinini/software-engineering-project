@@ -12,23 +12,35 @@ public class CredentialCheckHandler extends AuthHandler {
 
     @Override
     public boolean check(String username, String password) {
-        Account account = marketplace.getAccount().get(username);
+        Account account = null;
+
+        // Cerco l'account per username
+        for (Account acc : Marketplace.getAccount().values()) {
+            if (acc.getNomeUtente().equals(username)) {
+                account = acc;
+                break;
+            }
+        }
 
         if (account == null) {
             System.out.println("[Auth] Utente non trovato");
             return false;
         }
+
         if (!account.getPassword().equals(password)) {
             System.out.println("[Auth] Password errata");
             return false;
         }
 
         System.out.println("[Auth] Credenziali corrette");
-        // Se è l’ultimo passo con successo, salvo la sessione
+
+        // Salvo l'account nella sessione
         Session.setCurrentUser(account);
 
         return checkNext(username, password);
     }
+
 }
+
 
 

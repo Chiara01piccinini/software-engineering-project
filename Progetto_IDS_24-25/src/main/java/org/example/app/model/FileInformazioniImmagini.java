@@ -6,11 +6,11 @@ import java.util.Base64;
 //rappresenta il comportamento del file immagine ,in linea con il pattern strategy
 public class FileInformazioniImmagini implements Messaggio  {
     private String pathImmagine;
-    private IElemento elemento;
+    private IElemento prodotto;
 
-    public FileInformazioniImmagini(String pathImmagine, IElemento elemento) {
+    public FileInformazioniImmagini(String pathImmagine, IElemento prodotto) {
         this.pathImmagine = pathImmagine;
-        this.elemento = elemento;
+        this.prodotto = prodotto;
     }
 
     public String getContenuto() {
@@ -24,10 +24,10 @@ public class FileInformazioniImmagini implements Messaggio  {
     }
 
     public String getNome() {
-        return elemento.getNome();
+        return prodotto.getNome();
     }
 
-    public IElemento getElemento() {
-        return elemento;
+    public IElemento getProdotto() {
+        return prodotto;
     }
 }

@@ -93,10 +93,10 @@ public class GestoreCreazioni implements IGestore {
 
     public void creaInformazioni(Messaggio info, Componente sender) {
         if (info instanceof FileInformazioniImmagini immagini) {
-            immagini.getElemento().aggiungiInformazioni(immagini);
+            immagini.getProdotto().aggiungiInformazioni(immagini);
             sender.riceviMessaggio("Immagini aggiunte per il prodotto: " + immagini.getNome());
         } else if (info instanceof FileInformazioniTestuale testo) {
-            testo.getElemento().aggiungiInformazioni(testo);
+            testo.getProdotto().aggiungiInformazioni(testo);
             sender.riceviMessaggio("Testo aggiunto per il prodotto: " + testo.getNome());
         }
     }
@@ -127,15 +127,21 @@ public class GestoreCreazioni implements IGestore {
             tipo = tipoAccount.DISTRIBUTOREDITIPICITA;
         } else if (sender instanceof Animatore) {
             tipo = tipoAccount.ANIMATORE;
-        } else {
+        } else if( sender instanceof Curatore){
+            tipo= tipoAccount.CURATORE;
+        }else {
             tipo = tipoAccount.GENERICO;
         }
         Account account = new Account(info.getNomeUtente(), info.getPassword(), tipo);
-        sender.riceviMessaggio("account creato: " + info.getContenuto());
+        sender.riceviMessaggio(
+                "Account creato = username: " + info.getNomeUtente()
+                        + " email: " + info.getEmail()
+                        + " tipo: " + tipo
+        );
         sistema.aggiungiAccount(account);
     }
-    public void modificaDisponibilità(Prodotto prodotto,int nq){
 
+    public void modificaDisponibilità(Prodotto prodotto,int nq){
         prodotto.setQuantita(nq);
     }
 }
