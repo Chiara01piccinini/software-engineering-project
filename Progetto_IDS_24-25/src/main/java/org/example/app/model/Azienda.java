@@ -1,12 +1,16 @@
 package org.example.app.model;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Azienda {
     private String name;
     private Position position;
     private String PI;
 
-    public Azienda (String name,Position position, String PI){
+    @JsonCreator
+    public Azienda (@JsonProperty("nome") String name,@JsonProperty("posizione") Position position,@JsonProperty("PI") String PI){
         this.name = name;
        this.position = position;
         this.PI = PI;

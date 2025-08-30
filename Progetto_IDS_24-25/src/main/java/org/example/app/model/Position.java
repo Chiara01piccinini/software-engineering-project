@@ -1,11 +1,15 @@
 package org.example.app.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Position {
     private String nome;
     private double latitudine;
     private double longitudine;
 
-    public Position(String nome,double latitudine, double longitudine) {
+    @JsonCreator
+    public Position(@JsonProperty("nome") String nome,@JsonProperty("latitudine") double latitudine,@JsonProperty("longitudine") double longitudine) {
         this.nome = nome;
         this.latitudine = latitudine;
         this.longitudine = longitudine;

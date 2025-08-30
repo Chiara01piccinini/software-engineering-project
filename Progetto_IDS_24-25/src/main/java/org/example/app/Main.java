@@ -108,11 +108,6 @@ public class Main {
         }
 
         System.out.println();
-        try {
-            persistenceManager.salva();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -144,6 +139,7 @@ public class Main {
             // 2. Posizioni aziende ed eventi
             Position luogoAzienda1 = new Position("luogo azienda 1", 15.46, 9.10);
             Position luogoAzienda2 = new Position("luogo azienda 2", 56.256, 4.10);
+            Position luogoAzienda3 = new Position("luogo azienda 3",56.23,5.124);
             Position luogoEvento = new Position("Piazza Centrale", 45.123, 9.456);
 
 
@@ -164,6 +160,12 @@ public class Main {
                     4,
                     "animatore@email.com",
                     new Account("anim1", "pass", tipoAccount.ANIMATORE)
+            );
+            DistributoreDiTipicita distributore = new DistributoreDiTipicita(
+                    new Account("distrib1", "pass", tipoAccount.DISTRIBUTOREDITIPICITA),
+                    5,
+                    "distrib1@email.com",
+                    new Azienda("Pane", luogoAzienda3,"cod3")
             );
 
 
@@ -199,7 +201,7 @@ public class Main {
                     new HashSet<>(),
                     5
             );
-            gestorePubblicazioni.inviaPacchetto(produttore, pacchettoInfo);
+            gestorePubblicazioni.inviaPacchetto(distributore, pacchettoInfo);
 
             // 8. Creazione evento
             FileInformazioniEvento eventoInfo = new FileInformazioniEvento(
@@ -211,13 +213,6 @@ public class Main {
                     "Degustazioni e spettacoli"
             );
             gestorePubblicazioni.inviaEvento(animatore, eventoInfo);
-
-            // 9. Salvataggio persistente
-            File persistenceDir = new File("Persistence");
-            if (!persistenceDir.exists()) persistenceDir.mkdirs();
-
-            persistenceManager.salva();
-            System.out.println("[Debug] Salvataggio persistente completato");
 
         } catch (Exception e) {
             System.err.println("[FATAL] Errore durante il test creazione contenuti");
@@ -307,11 +302,6 @@ public class Main {
 
         System.out.println(">>> Test completato");
 
-        try {
-            persistenceManager.salva();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -379,13 +369,6 @@ public class Main {
 
         // Logout
         Session.logout();
-
-        // Salvataggio dati
-        try {
-            persistenceManager.salva();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     public static void testSponsorizzazioneProdotto() {
         System.out.println(">>> Test sponsorizzazione prodotto");
@@ -455,12 +438,6 @@ public class Main {
         // Logout venditore
         Session.logout();
 
-        // Salvataggio dati
-        try {
-            persistenceManager.salva();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

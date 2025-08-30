@@ -32,7 +32,7 @@ public class PersistenceManager {
             Marketplace.setAccount(data.getProfili());
             System.out.println("Dati caricati da " + filePath);
         } else {
-            System.out.println("File JSON non trovato, caricamento saltato.");
+            System.out.println("File JSON non ancora esistente");
         }
     }
 }
