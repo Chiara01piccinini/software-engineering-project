@@ -125,6 +125,19 @@ public class Componente {
             gestore.acquistaPacchetto(this, (Pacchetto) elemento, quantità);
         }
     }
+    public void aggiungiAlCarrello(IElemento elemento, int quantità) {
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        this.account.aggiungiElemento(elemento, quantità);
+        System.out.println("[Carrello] Aggiunto " + quantità + "x " + elemento.getNome());
+    }
+    public void acquistaCarrello(GestoreAcquisti gestore ){
+        if (!Session.isAuthenticated()) {
+            throw new SecurityException("Operazione non consentita: utente non autenticato");
+        }
+        gestore.acquistaCarrello(this);
+    }
     public  void riceviMessaggio(String messaggio){
             System.out.println("[Messaggio]: " + messaggio);
     };

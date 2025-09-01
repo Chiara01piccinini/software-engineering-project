@@ -33,7 +33,7 @@ public class Main {
 
         //testCreazioneAccounteautenticazione();
         //testCreazioneContenuti();
-        //testAcquisto();
+        testAcquisto();
         //testPrenotazioneEvento();
         //testSponsorizzazioneProdotto();
 
@@ -45,78 +45,11 @@ public class Main {
         }
     }
 
-    public static void testCreazioneAccounteautenticazione() {
-        System.out.println(">>> Test creazione account");
-
-        // Dati account
-        FileInformazioniAccount info = new FileInformazioniAccount(
-                "mario",
-                "password123",
-                "mario@email.com",
-                tipoAccount.GENERICO
-        );
-
-        // Creo un componente che funge da "mittente" della richiesta
-        Componente sender = new Componente(
-                1,
-                "utente1@email.com"
-        );
-
-        // Creazione account tramite gestoreCreazioni
-        gestoreCreazioni.creaAccount(info, sender);
-
-        // Stampa tutti gli account presenti nel marketplace
-        marketplace.getAccount().forEach((id, account) -> {
-            System.out.println("ID: " + id +
-                    ", Username: " + account.getNomeUtente() +
-                    ", Tipo: " + account.getTipologia());
-        });
-
-        // ---------------------- TEST AUTENTICAZIONE ----------------------
-        System.out.println(">>> Test autenticazione");
-
-// Creo i due handler
-        AuthHandler roleCheck = new RoleCheckHandler(marketplace);
-        AuthHandler credentialCheck = new CredentialCheckHandler(marketplace);
-
-// Collego la catena
-        roleCheck.linkWith(credentialCheck);
-
-// Creo il servizio di autenticazione
-        AuthService authService = new AuthService(roleCheck);
-
-// Tentativo di login corretto
-        boolean success = authService.logIn("mario", "password123");
-        if (success) {
-            System.out.println("[Test] Login riuscito");
-        } else {
-            System.out.println("[Test] Login fallito");
-        }
-
-// Tentativo di login con credenziali errate
-        boolean fail = authService.logIn("mario", "wrongpass");
-        if (!fail) {
-            System.out.println("[Test] Login errato gestito correttamente");
-        }
-
-// Controllo sessione
-        if (Session.isAuthenticated()) {
-            System.out.println("[Test] Utente autenticato in sessione: " + Session.getCurrentUser().getNomeUtente());
-            Session.logout();
-        } else {
-            System.out.println("[Test] Nessun utente in sessione");
-        }
-
-        System.out.println();
-    }
-
-
-    // ---------------------- TEST CREAZIONE ----------------------
     public static void testCreazioneContenuti() {
         System.out.println(">>> Test creazione contenuti START");
 
         try {
-            // 1. Creazione account curatore usando FileInformazioniAccount
+            // 1. Creazione account curatore
             FileInformazioniAccount curatoreInfo = new FileInformazioniAccount(
                     "curatore1",
                     "pass",
@@ -124,24 +57,19 @@ public class Main {
                     tipoAccount.CURATORE
             );
 
-            Curatore sender = new Curatore(new Account(curatoreInfo.getNomeUtente(), curatoreInfo.getPassword(),tipoAccount.CURATORE), 0,"system@test.com",new EmailSystem());
+            Curatore sender = new Curatore(new Account(curatoreInfo.getNomeUtente(), curatoreInfo.getPassword(), tipoAccount.CURATORE), 0, "system@test.com", new EmailSystem());
             gestoreCreazioni.creaAccount(curatoreInfo, sender);
 
-            // Recupero dell'account appena creato
             Account curatoreAccount = marketplace.getAccount().values().stream()
                     .filter(a -> a.getNomeUtente().equals("curatore1"))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Account curatore non trovato!"));
 
-            // Creazione Curatore con account registrato
             Curatore curatore = new Curatore(curatoreAccount, 1, sender.getEmail(), new EmailSystem());
 
             // 2. Posizioni aziende ed eventi
             Position luogoAzienda1 = new Position("luogo azienda 1", 15.46, 9.10);
-            Position luogoAzienda2 = new Position("luogo azienda 2", 56.256, 4.10);
-            Position luogoAzienda3 = new Position("luogo azienda 3",56.23,5.124);
             Position luogoEvento = new Position("Piazza Centrale", 45.123, 9.456);
-
 
             // 3. Creazione altri utenti
             Produttore produttore = new Produttore(
@@ -150,24 +78,12 @@ public class Main {
                     "prod1@email.com",
                     new Azienda("Frutta", luogoAzienda1, "cod1")
             );
-            Trasformatore trasformatore = new Trasformatore(
-                    new Account("tras1", "pass", tipoAccount.TRASFORMATORE),
-                    3,
-                    "tras1@email.com",
-                    new Azienda("Salumi", luogoAzienda2, "cod2")
-            );
+
             Animatore animatore = new Animatore(
                     4,
                     "animatore@email.com",
                     new Account("anim1", "pass", tipoAccount.ANIMATORE)
             );
-            DistributoreDiTipicita distributore = new DistributoreDiTipicita(
-                    new Account("distrib1", "pass", tipoAccount.DISTRIBUTOREDITIPICITA),
-                    5,
-                    "distrib1@email.com",
-                    new Azienda("Pane", luogoAzienda3,"cod3")
-            );
-
 
             // 4. Autenticazione curatore
             AuthHandler roleCheck = new RoleCheckHandler(marketplace);
@@ -175,35 +91,50 @@ public class Main {
             roleCheck.linkWith(credentialCheck);
             AuthService authService = new AuthService(roleCheck);
 
-            boolean loggedIn = authService.logIn("curatore1", "pass");
-            if (loggedIn) {
-                System.out.println("[Test] Curatore autenticato correttamente");
-            } else {
+            if (!authService.logIn("curatore1", "pass")) {
                 System.out.println("[Test] Autenticazione fallita");
                 return;
             }
 
-            // 5. Creazione prodotto
+            // 5. Creazione prodotti e messa in vendita
             Prodotto p1 = new ProdottoBase("Pere", produttore.getAzienda(), produttore);
-            FileInformazioniProdotto prodInfo = new FileInformazioniProdotto("Pere Fresche", produttore.getAzienda());
-            gestorePubblicazioni.inviaProdotto(produttore, prodInfo);
-            System.out.println("[Debug] Prodotto inviato");
+            Prodotto p2 = new ProdottoBase("Mele", produttore.getAzienda(), produttore);
 
-            // 6. Creazione informazioni testuali collegate al prodotto
-            FileInformazioniTestuale info = new FileInformazioniTestuale("Storia del vino", p1);
-            gestorePubblicazioni.inviaInformazioni(produttore, info);
-            System.out.println("[Debug] Informazioni testuali inviate");
+            // Imposto prezzo, quantità e vendita
+            p1.setPrezzo(BigDecimal.valueOf(2.5));
+            p1.setQuantita(10);
+            p1.setVendita(true);
 
-            // 7. Creazione pacchetto
+            p2.setPrezzo(BigDecimal.valueOf(3.0));
+            p2.setQuantita(8);
+            p2.setVendita(true);
+
+            gestorePubblicazioni.inviaProdotto(produttore, new FileInformazioniProdotto("Pere Fresche", produttore.getAzienda()));
+            gestorePubblicazioni.inviaProdotto(produttore, new FileInformazioniProdotto("Mele Fresche", produttore.getAzienda()));
+            System.out.println("[Debug] Prodotti inviati e messi in vendita");
+
+            // 6. Creazione pacchetto con distributore
+            DistributoreDiTipicita distributore = new DistributoreDiTipicita(
+                    new Account("dist1", "distpass", tipoAccount.DISTRIBUTOREDITIPICITA),
+                    5,
+                    "dist1@email.com",
+                    new Azienda("DistribuzioniSRL", luogoAzienda1, "codDist")
+            );
+
+            Set<Prodotto> prodottiPacchetto = new HashSet<>();
+            prodottiPacchetto.add(p1);
+            prodottiPacchetto.add(p2);
+
             FileInformazioniPacchetto pacchettoInfo = new FileInformazioniPacchetto(
                     "Degustazione Tipica",
                     BigDecimal.valueOf(10),
-                    new HashSet<>(),
+                    prodottiPacchetto,
                     5
             );
+
             gestorePubblicazioni.inviaPacchetto(distributore, pacchettoInfo);
 
-            // 8. Creazione evento
+            // 7. Creazione evento
             FileInformazioniEvento eventoInfo = new FileInformazioniEvento(
                     new Date(),
                     LocalDateTime.now(),
@@ -218,7 +149,6 @@ public class Main {
             System.err.println("[FATAL] Errore durante il test creazione contenuti");
             e.printStackTrace();
         } finally {
-            // Logout curatore
             try {
                 Session.logout();
                 System.out.println("[Test] Curatore disconnesso");
@@ -231,77 +161,93 @@ public class Main {
         System.out.println(">>> Test creazione contenuti END");
     }
 
-    // ---------------------- TEST ACQUISTO ----------------------
     public static void testAcquisto() {
-        System.out.println(">>> Test creazione account e acquisto");
+        System.out.println(">>> Test creazione account e acquisto START");
 
-        // ---------------------- CREAZIONE ACCOUNT ----------------------
-        FileInformazioniAccount info = new FileInformazioniAccount(
-                "acquirente1",
-                "pass",
-                "acquirente@email.com",
-                tipoAccount.GENERICO
-        );
+        try {
+            // 1. Creazione account acquirente
+            FileInformazioniAccount info = new FileInformazioniAccount(
+                    "acquirente1",
+                    "pass",
+                    "acquirente@email.com",
+                    tipoAccount.GENERICO
+            );
+            Componente sender = new Componente(1, "system@email.com");
+            gestoreCreazioni.creaAccount(info, sender);
 
-        Componente sender = new Componente(1, "mittente@email.com");
+            Account accountAcquirente = marketplace.getAccountByUsername("acquirente1");
+            Componente acquirente = new Componente(1, "acquirente@email.com");
+            acquirente.setAccount(accountAcquirente);
 
-        // Creazione account tramite gestoreCreazioni
-        gestoreCreazioni.creaAccount(info, sender);
+            // 2. Autenticazione acquirente
+            AuthHandler roleCheck = new RoleCheckHandler(marketplace);
+            AuthHandler credentialCheck = new CredentialCheckHandler(marketplace);
+            roleCheck.linkWith(credentialCheck);
+            AuthService authService = new AuthService(roleCheck);
 
-        // Recupero dell'account appena creato dal marketplace
-        Account accountAcquirente = marketplace.getAccountByUsername("acquirente1");
-        Componente acquirente = new Componente(1, "acquirente@email.com");
-        acquirente.setAccount(accountAcquirente);
+            if (!authService.logIn("acquirente1", "pass")) {
+                throw new RuntimeException("Autenticazione fallita, impossibile procedere con l'acquisto");
+            }
 
-        // ---------------------- AUTENTICAZIONE ----------------------
-        AuthHandler roleCheck = new RoleCheckHandler(marketplace);
-        AuthHandler credentialCheck = new CredentialCheckHandler(marketplace);
-        roleCheck.linkWith(credentialCheck);
-        AuthService authService = new AuthService(roleCheck);
+            // 3. Creazione produttore e invio prodotti
+            Position luogoAzienda = new Position("luogo azienda", 4.4, 9.9);
+            Produttore produttore = new Produttore(
+                    new Account("prod2", "pass", tipoAccount.PRODUTTORE),
+                    2,
+                    "prod2@email.com",
+                    new Azienda("Frutta2", luogoAzienda, "cod3")
+            );
 
-        if (authService.logIn("acquirente1", "pass")) {
-            System.out.println("[Test] Login riuscito");
-        } else {
-            throw new RuntimeException("Autenticazione fallita, impossibile procedere con l'acquisto");
+            Prodotto prodotto1 = new ProdottoBase("Mele Golden", produttore.getAzienda(), produttore);
+            Prodotto prodotto2 = new ProdottoBase("Banane", produttore.getAzienda(), produttore);
+
+            gestorePubblicazioni.inviaProdotto(produttore, new FileInformazioniProdotto("Mele Golden", produttore.getAzienda()));
+            gestorePubblicazioni.inviaProdotto(produttore, new FileInformazioniProdotto("Banane", produttore.getAzienda()));
+
+            prodotto1.setPrezzo(BigDecimal.valueOf(2.5));
+            prodotto1.setVendita(true);
+            prodotto1.setQuantita(10);
+
+            prodotto2.setPrezzo(BigDecimal.valueOf(3.0));
+            prodotto2.setVendita(true);
+            prodotto2.setQuantita(15);
+
+            // 4. Creazione distributore e pacchetto con più prodotti
+            DistributoreDiTipicita distributore = new DistributoreDiTipicita(
+                    new Account("dist1", "distpass", tipoAccount.DISTRIBUTOREDITIPICITA),
+                    3,
+                    "dist@email.com",
+                    new Azienda("DistribuzioniSRL", luogoAzienda, "cod4")
+            );
+
+            Set<Prodotto> prodottiPacchetto = new HashSet<>();
+            prodottiPacchetto.add(prodotto1);
+            prodottiPacchetto.add(prodotto2);
+
+            FileInformazioniPacchetto pacchettoInfo = new FileInformazioniPacchetto(
+                    "Pacchetto Degustazione",
+                    BigDecimal.valueOf(10),
+                    prodottiPacchetto,
+                    2
+            );
+
+            gestorePubblicazioni.inviaPacchetto(distributore, pacchettoInfo);
+
+            System.out.println("[Debug] Pacchetti presenti nel marketplace:");
+            marketplace.getPacchetti().values().forEach(p ->
+                    System.out.println(" - " + p.getNome() + " (quantità: " + p.getQuantita() + ", prezzo: " + p.calcolaPrezzo() + ")")
+            );
+
+        } catch (Exception e) {
+            System.err.println("[FATAL] Errore durante il test acquisto");
+            e.printStackTrace();
+        } finally {
+            try {
+                Session.logout();
+            } catch (Exception ignored) {}
         }
 
-        // ---------------------- PREPARAZIONE MARKETPLACE ----------------------
-        Marketplace marketplace = new Marketplace();
-
-        // Creazione produttore e prodotto
-        Position luogoAzienda = new Position("luogo azienda", 4.4, 9.9);
-        Account accountProduttore = new Account("prod2", "pass", tipoAccount.PRODUTTORE);
-        Produttore produttore = new Produttore(accountProduttore, 2, "prod2@email.com",
-                new Azienda("Frutta2", luogoAzienda, "cod3"));
-
-        Prodotto prodotto = new ProdottoBase("Mele Golden", produttore.getAzienda(), produttore);
-        prodotto.setPrezzo(BigDecimal.valueOf(2.5));
-        prodotto.setVendita(true);
-        prodotto.setQuantita(10);
-        marketplace.aggiungiProdotto(prodotto);
-
-        // Creazione pacchetto
-        Set<Prodotto> pacchettoProdotti = new HashSet<>();
-        pacchettoProdotti.add(prodotto);
-        Pacchetto pacchetto = new Pacchetto("Pacchetto Degustazione", BigDecimal.valueOf(10),
-                pacchettoProdotti, 2);
-        pacchetto.setPrezzo(BigDecimal.valueOf(2.5));
-        marketplace.aggiungiPacchetto(pacchetto);
-
-        // ---------------------- ACQUISTO ----------------------
-        GestoreAcquisti gestoreAcquisti = new GestoreAcquisti(new SistemaPagamenti(), marketplace);
-
-        // Acquisto prodotto
-        gestoreAcquisti.acquistaProdotto(acquirente, prodotto, 3);
-
-        // Acquisto pacchetto
-        gestoreAcquisti.acquistaPacchetto(acquirente, pacchetto, 1);
-
-        // Logout
-        Session.logout();
-
-        System.out.println(">>> Test completato");
-
+        System.out.println(">>> Test creazione account e acquisto END");
     }
 
 
@@ -369,6 +315,13 @@ public class Main {
 
         // Logout
         Session.logout();
+
+        // Salvataggio dati
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public static void testSponsorizzazioneProdotto() {
         System.out.println(">>> Test sponsorizzazione prodotto");
@@ -438,6 +391,12 @@ public class Main {
         // Logout venditore
         Session.logout();
 
+        // Salvataggio dati
+        try {
+            persistenceManager.salva();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

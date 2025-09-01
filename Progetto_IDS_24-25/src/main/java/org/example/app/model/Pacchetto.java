@@ -49,11 +49,13 @@ public class Pacchetto implements IElemento{
     }
 
     public BigDecimal calcolaPrezzo() {
+        BigDecimal totale = BigDecimal.ZERO;
         for (Prodotto p : prodotti){
-            prezzo = prezzo.add(p.calcolaPrezzo());
+            totale = totale.add(p.calcolaPrezzo());
         }
-        return prezzo.multiply(percentualeSconto).divide(new BigDecimal( 100), RoundingMode.HALF_UP);
+        return totale.multiply(percentualeSconto).divide(new BigDecimal(100), RoundingMode.HALF_UP);
     }
+
 
     public void setPrezzo(BigDecimal prezzo) {
         this.prezzo = prezzo;
