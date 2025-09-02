@@ -14,6 +14,7 @@ public class GestoreCreazioni implements IGestore {
         this.gestorePubblicazioni = gestorePubblicazioni;
         this.curatore = curatore;
         this.mappa = new MappaService();
+        this.sistema=sistema;
     }
 
     public MappaService getMappa() {
@@ -71,20 +72,34 @@ public class GestoreCreazioni implements IGestore {
 
     // Metodo usato da GestorePubblicazioni dopo approvazione
     public void creaProdotto(FileInformazioniProdotto info, Componente sender) {
-        if (sender instanceof Produttore produttore){
+        boolean esiste = sistema.getProdotti().values().stream()
+                .anyMatch(p -> p.getNome().equals(info.getNome()));
+        if (esiste) {
+            sender.riceviMessaggio("[Messaggio]: Prodotto già esistente: " + info.getNome());
+            return;
+        }
+
+        if (sender instanceof Produttore produttore) {
             ProdottoBase prodottoBase = new ProdottoBase(info.getNome(), info.getAzienda(), produttore);
             sistema.aggiungiProdotto(prodottoBase);
-        } else if (sender instanceof  Trasformatore trasformatore){
+        } else if (sender instanceof Trasformatore trasformatore) {
             ProdottoElaborato prodottoElaborato = new ProdottoElaborato(info.getNome(), info.getAzienda(), trasformatore);
             sistema.aggiungiProdotto(prodottoElaborato);
         }
         sender.riceviMessaggio("Prodotto creato: " + info.getNome());
     }
-
     public void creaPacchetto(FileInformazioniPacchetto info, Componente sender) {
-        if (info.getProdotti().size() > 1){
-            for (int i = 0; i < info.getQuantita(); i++){
-                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(), info.getProdotti(), info.getQuantita());
+        boolean esiste = sistema.getPacchetti().values().stream()
+                .anyMatch(p -> p.getNome().equals(info.getNome()));
+        if (esiste) {
+            sender.riceviMessaggio("[Messaggio]: Pacchetto già esistente: " + info.getNome());
+            return;
+        }
+
+        if (info.getProdotti().size() > 1) {
+            for (int i = 0; i < info.getQuantita(); i++) {
+                Pacchetto pacchetto = new Pacchetto(info.getNome(), info.getPercentualeSconto(),
+                        info.getProdotti(), info.getQuantita());
                 sistema.aggiungiPacchetto(pacchetto);
             }
             sender.riceviMessaggio("Pacchetto creato: " + info.getNome());
@@ -102,14 +117,28 @@ public class GestoreCreazioni implements IGestore {
     }
 
     public void creaEvento(FileInformazioniEvento info, Animatore sender) {
-        Evento evento =new Evento(info.getData(),info.getOrario(),info.getLuogo(),info.getNome(),info.getBiglietti(),info.getDescrizione());
-        sistema.aggiungiEvento(evento);
-        mappa.getMappa().put(info.getLuogo(),info.getNome());
-        sender.riceviMessaggio("evento creato :" + evento.getNome());
+        boolean esiste = sistema.getEventi().values().stream()
+                .anyMatch(e -> e.getNome().equals(info.getNome()) && e.getData().equals(info.getData()));
+        if (esiste) {
+            sender.riceviMessaggio("[Messaggio]: Evento già esistente: " + info.getNome());
+            return;
+        }
 
+        Evento evento = new Evento(info.getData(), info.getOrario(), info.getLuogo(),
+                info.getNome(), info.getBiglietti(), info.getDescrizione());
+        sistema.aggiungiEvento(evento);
+        mappa.getMappa().put(info.getLuogo(), info.getNome());
+        sender.riceviMessaggio("Evento creato: " + evento.getNome());
     }
 
     public void creaAccount(FileInformazioniAccount info, Componente sender) {
+        boolean esiste = sistema.getAccount().values().stream()
+                .anyMatch(acc -> acc.getNomeUtente().equals(info.getNomeUtente()));
+        if (esiste) {
+            sender.riceviMessaggio("[Messaggio]: Account già esistente: " + info.getNomeUtente());
+            return;
+        }
+
         tipoAccount tipo;
         if (sender instanceof Produttore) {
             tipo = tipoAccount.PRODUTTORE;
@@ -127,11 +156,12 @@ public class GestoreCreazioni implements IGestore {
             tipo = tipoAccount.DISTRIBUTOREDITIPICITA;
         } else if (sender instanceof Animatore) {
             tipo = tipoAccount.ANIMATORE;
-        } else if( sender instanceof Curatore){
-            tipo= tipoAccount.CURATORE;
-        }else {
+        } else if (sender instanceof Curatore) {
+            tipo = tipoAccount.CURATORE;
+        } else {
             tipo = tipoAccount.GENERICO;
         }
+
         Account account = new Account(info.getNomeUtente(), info.getPassword(), tipo);
         sender.riceviMessaggio(
                 "Account creato = username: " + info.getNomeUtente()

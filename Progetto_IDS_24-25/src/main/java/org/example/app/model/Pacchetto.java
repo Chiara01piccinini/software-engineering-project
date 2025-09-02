@@ -50,10 +50,21 @@ public class Pacchetto implements IElemento{
 
     public BigDecimal calcolaPrezzo() {
         BigDecimal totale = BigDecimal.ZERO;
-        for (Prodotto p : prodotti){
+
+        for (Prodotto p : prodotti) {
             totale = totale.add(p.calcolaPrezzo());
         }
-        return totale.multiply(percentualeSconto).divide(new BigDecimal(100), RoundingMode.HALF_UP);
+
+        // Se percentualeSconto è null o zero, ritorna il totale
+        if (percentualeSconto == null || percentualeSconto.compareTo(BigDecimal.ZERO) <= 0) {
+            return totale;
+        }
+
+        // Prezzo finale = totale * (1 - sconto/100)
+        BigDecimal sconto = percentualeSconto.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+        BigDecimal prezzoFinale = totale.multiply(BigDecimal.ONE.subtract(sconto));
+
+        return prezzoFinale;
     }
 
 

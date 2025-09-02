@@ -33,7 +33,7 @@ public class Main {
 
         //testCreazioneAccounteautenticazione();
         //testCreazioneContenuti();
-        testAcquisto();
+        //testAcquisto();
         //testPrenotazioneEvento();
         //testSponsorizzazioneProdotto();
 
@@ -43,6 +43,49 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public static void testCreazioneAccounteautenticazione() { System.out.println(">>> Test creazione account");
+        // Dati account
+         FileInformazioniAccount info = new FileInformazioniAccount( "mario", "password123", "mario@email.com", tipoAccount.GENERICO );
+         // Creo un componente che funge da "mittente" della richiesta
+        Componente sender = new Componente( 1, "utente1@email.com" );
+        // Creazione account tramite gestoreCreazioni
+        gestoreCreazioni.creaAccount(info, sender);
+        // Stampa tutti gli account presenti nel marketplace
+        marketplace.getAccount().forEach((id, account) -> { System.out.println(
+                "ID: " + id + ", Username: " + account.getNomeUtente() +
+                        ", Tipo: " + account.getTipologia()); });
+        // ---------------------- TEST AUTENTICAZIONE ----------------------
+        System.out.println(">>> Test autenticazione");
+        // Creo i due handler
+        AuthHandler roleCheck = new RoleCheckHandler(marketplace);
+        AuthHandler credentialCheck = new CredentialCheckHandler(marketplace);
+        // Collego la catena
+        roleCheck.linkWith(credentialCheck);
+        // Creo il servizio di autenticazione
+        AuthService authService = new AuthService(roleCheck);
+        // Tentativo di login corretto
+        boolean success = authService.logIn("mario", "password123");
+        if (success) { System.out.println("[Test] Login riuscito");
+        } else {
+            System.out.println("[Test] Login fallito");
+        }
+        // Tentativo di login con credenziali errate
+        boolean fail = authService.logIn("mario", "wrongpass");
+        if (!fail) {
+            System.out.println("[Test] Login errato gestito correttamente");
+        }
+    // Controllo sessione
+    if (Session.isAuthenticated())
+    { System.out.println("[Test] Utente autenticato in sessione: " + Session.getCurrentUser().getNomeUtente()); Session.logout();
+    } else {
+        System.out.println("[Test] Nessun utente in sessione");
+    }
+    System.out.println();
+    try {
+        persistenceManager.salva();
+    } catch (IOException e)
+    { e.printStackTrace(); }
     }
 
     public static void testCreazioneContenuti() {

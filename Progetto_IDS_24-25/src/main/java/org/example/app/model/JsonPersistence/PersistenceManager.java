@@ -5,6 +5,7 @@ import org.example.app.model.Marketplace;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class PersistenceManager {
     private static final String DIRECTORY_PATH = "Persistence";
@@ -37,7 +38,9 @@ public class PersistenceManager {
 
     public void carica() throws IOException {
         File file = new File(FILE_PATH);
-        if (file.exists()) {
+
+        if (file.exists() && file.length() > 0) {
+            // File esistente e non vuoto: carica dati
             MarketplaceData data = mapper.readValue(file, MarketplaceData.class);
             Marketplace.setProdotti(data.getProdotti());
             Marketplace.setPacchetti(data.getPacchetti());
@@ -45,7 +48,15 @@ public class PersistenceManager {
             Marketplace.setAccount(data.getProfili());
             System.out.println("Dati caricati da " + FILE_PATH);
         } else {
-            System.out.println("File JSON non ancora esistente, inizializzazione nuova.");
+            // File mancante o vuoto: inizializza mappe vuote e crea file
+            System.out.println("File JSON non ancora esistente o vuoto, inizializzazione nuova.");
+            Marketplace.setProdotti(new HashMap<>());
+            Marketplace.setPacchetti(new HashMap<>());
+            Marketplace.setEventi(new HashMap<>());
+            Marketplace.setAccount(new HashMap<>());
+
+            // Salva subito il file iniziale
+            salva();
         }
     }
 }
