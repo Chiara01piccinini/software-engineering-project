@@ -1,6 +1,7 @@
 package com.unicam.ecommerce.Service;
 
 import com.unicam.ecommerce.Component.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,7 +40,17 @@ public class Gestore extends Componente implements Mediator  {
         this.sistema = sistema;
         this.social = social;
     }
-
+    @Autowired
+    public Gestore(Curatore curatore, EmailSystem notifiche,
+                   ContentFactory creatore, Marketplace sistema,
+                   SistemaSocial social) {
+        super("", ""); // nome e cognome vuoti inizialmente
+        this.curatore = curatore;
+        this.notifiche = notifiche;
+        this.creatore = creatore;
+        this.sistema = sistema;
+        this.social = social;
+    }
     // ---------- Gestione richieste dai venditori/distributori/animatori ----------
 
     public void gestisciRichiestaProdotto(RichiestaProdotto richiesta, Venditore sender) {
